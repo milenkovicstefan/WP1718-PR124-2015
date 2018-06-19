@@ -10,7 +10,7 @@ namespace TaxiSluzba.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "Home Page";
+            ViewBag.Title = "Taxi služba";
 
             return View();
         }
