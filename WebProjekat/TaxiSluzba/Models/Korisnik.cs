@@ -140,6 +140,24 @@ namespace TaxiSluzba.Models
                 voznje = value;
             }
         }
+
+        public string Jmbg
+        {
+            get
+            {
+                return jmbg;
+            }
+
+            set
+            {
+                jmbg = value;
+            }
+        }
         #endregion
+
+        public override string ToString()
+        {
+            return Ime + " " + Prezime;
+        }
     }
 }

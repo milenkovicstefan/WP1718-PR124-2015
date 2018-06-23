@@ -1,4 +1,5 @@
-﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script> 
+﻿@model Dictionary<string, TaxiSluzba.Models.Korisnik>
+<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script> 
 <body style="background-color:lightgray;">
     <div id="loginPage">
         <div id="logovanjeDiv" style="background-color:black; color:white; width:100vw; height:5em; position:absolute; top:1vw;">   
@@ -152,22 +153,50 @@
              </font>
         </div>
     </div>
-<div id="test" hide="true">
-    <h1>Ćaooo</h1>
-</div>
+    <div id="dispecerUlogovan" hidden>
+        <h1>Dispečer</h1>
+    </div>
+    <div id="vozacUlogovan" hidden>
+        <h1>Vozač</h1>
+    </div>
+    <div id="musterijaUlogovana" hidden>
+        <h1>Mušterija</h1>
+    </div>
 
-<script>
-    $(function () {
-        $('#submitLogin').on('click', function () {
-            var login = {
-                korisnicko: $('#korisnickoLogin').val(),
-                lozinka: $('#lozinkaLogin').val()
-            };
-            $('#loginPage').hide();
-            $('#test').show();
-            console.log(login);
+    <script>
+        var user;
+        $(function () {
+            $('#submitLogin').on('click', function () {
+                var user = {
+                    KorisnickoIme: $('#korisnickoLogin').val(),
+                    Lozinka: $('#lozinkaLogin').val()
+                };
+            
+                var JSONObj = JSON.stringify(user);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Login',
+                    data: JSONObj,
+                    success: function (data) {
+                        object = JSON.parse(data);
+                        alert('Korisnik ' + object.KorisnickoIme + ' ulogovan');
+                        $('#loginPage').hide();
+                        if (object.Uloga == 0)
+                            $('#dispecerUlogovan').show();
+                        else if (object.Uloga == 1)
+                            $('#vozacUlogovan').show();
+                        else if (object.Uloga == 2)
+                            $('#musterijaUlogovana').show();
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            
+                console.log(user.KorisnickoIme);
+            })
         })
-    })
-</script>
+    </script>
 
 </body>

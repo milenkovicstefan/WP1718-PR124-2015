@@ -54,6 +54,6 @@ C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\System.Web.WebP
 C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\System.Web.WebPages.Deployment.xml
 C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\System.Web.WebPages.Razor.xml
 C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\Antlr3.Runtime.pdb
-C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.csprojResolveAssemblyReference.cache
 C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.dll
 C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.pdb
+C:\Users\stefa\.git\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.csprojResolveAssemblyReference.cache
