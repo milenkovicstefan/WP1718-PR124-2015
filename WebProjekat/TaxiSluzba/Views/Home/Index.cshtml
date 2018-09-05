@@ -1,0 +1,198 @@
+﻿@model Dictionary<string, TaxiSluzba.Models.Korisnik>
+<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="loginPage">
+        <div id="LogovanjeDiv" class="header">
+            <form id="LogovanjeForm">
+                <font size="4">
+                    <font size="7">
+                        <font color="yellow"><b>TAXI</b></font>SLUŽBA
+                    </font>
+                </font>
+                <table align="right">
+                    <tr>
+                        <td>Korisničko ime: </td>
+                        <td>&nbsp;</td>
+                        <td>Lozinka: </td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td><input id="korisnickoLogin" type="text" name="korisnickoLogin"></td>
+                        <td>&nbsp;</td>
+                        <td><input id="lozinkaLogin" type="password" name="lozinkaLogin"></td>
+                        <td><input id="submitLogin" type="button" name="submitLogin" value="Ulogujte se" style="background-color:yellow; color:black; border:1px solid gray;"></td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="RegistracijaDiv" class="row">
+            <div class="left">
+                <img class="img" align="left" src="http://www.letopdelhumour.fr/wp-content/uploads/2017/02/taxi-cab4.png" />
+            </div>
+            <div class="right">
+                <font size="5">
+                    <form id="RegistracijaForm">
+                        <table align="right" class="regTable">
+
+                            <tr>
+                                <td colspan="2" align="center"><font size="6"><b>Napravite nalog</b></font></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>Korisničko ime: </td>
+                                <td><input class="txtbox" id="korisnicko" type="text" name="korisnicko" required></td>
+                            </tr>
+                            <tr>
+                                <td>Lozinka: </td>
+                                <td><input id="lozinka" type="password" name="lozinka" required></td>
+                            </tr>
+                            <tr>
+                                <td>Ime: </td>
+                                <td><input id="ime" type="text" name="ime" required></td>
+                            </tr>
+                            <tr>
+                                <td>Prezime: </td>
+                                <td><input id="prezime" type="text" name="prezime" required></td>
+                            </tr>
+                            <tr>
+                                <td>Pol: </td>
+                                <td><input type="radio" name="pol" value=0 checked> M &nbsp;&nbsp; <input type="radio" name="pol" value=1> Ž</td>
+                            </tr>
+                            <tr>
+                                <td>JMBG: </td>
+                                <td><input id="jmbg" type="text" name="jmbg" required></td>
+                            </tr>
+                            <tr>
+                                <td>Kontakt telefon: </td>
+                                <td><input id="telefon" type="text" placeholder="0665556677" name="telefon" required></td>
+                            </tr>
+                            <tr>
+                                <td>E-mail: </td>
+                                <td><input id="email" type="text" name="email" required></td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp; </td>
+                                <td><input id="submitRegistracija" type="button" name="submitRegistracija" value="Registrujte se"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </font>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+            $.ajax({
+                type: 'GET',
+                url: '/api/Login',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    if (object != null) {
+                        localStorage.setItem("session", data);
+                        if (object.Uloga == 0) {
+                            window.location.href = '/Home/Admin';
+                        }
+                        else if (object.Uloga == 1) {
+                            window.location.href = '/Home/Driver';
+                        }
+                        else if (object.Uloga == 2) {
+                            window.location.href = '/Home/Customer';
+                        }
+                    }
+                },
+            });
+            $(function () {
+            $('#submitLogin').on('click', function () {
+                var user = {
+                    KorisnickoIme: $('#korisnickoLogin').val(),
+                    Lozinka: $('#lozinkaLogin').val()
+                };
+
+                var JSONObj = JSON.stringify(user);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Login',
+                    data: JSONObj,
+                    success: function (data) {
+                        var object = JSON.parse(data);
+                        if (object.Uloga == 0) {
+                            window.location.href = '/Home/Admin';
+                        }
+                        else if (object.Uloga == 1) {
+                            window.location.href = '/Home/Driver';
+                        }
+                        else if (object.Uloga == 2) {
+                            window.location.href = '/Home/Customer';
+                        }
+
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+                console.log(user.KorisnickoIme);
+                console.log(localStorage.getItem("session"));
+                $('input[type="text"]').val('');
+                $('input[type="password"]').val('');
+            })
+        });
+
+        $(function () {
+            $('#submitRegistracija').on('click', function () {
+                var user = {
+                    KorisnickoIme: $('#korisnicko').val(),
+                    Lozinka: $('#lozinka').val(),
+                    Ime: $('#ime').val(),
+                    Prezime: $('#prezime').val(),
+                    Pol: $('input[name=pol]:checked').val(),
+                    Jmbg: $('input[name=jmbg]').val(),
+                    KontaktTelefon: $('input[name=telefon]').val(),
+                    Email: $('input[name=email]').val(),
+                    Uloga: 2
+                };
+
+                var JSONObj = JSON.stringify(user);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Register',
+                    data: JSONObj,
+                    success: function (data) {
+                        var object = JSON.parse(data);
+                        alert('Korisnik ' + object.KorisnickoIme + ' registrovan. Možete se ulogovati.');
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+                $('input[type="text"]').val('');
+                $('input[type="password"]').val('');
+            })
+        });
+
+    </script>
+
+</body>

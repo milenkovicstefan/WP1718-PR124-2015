@@ -1,0 +1,117 @@
+﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+            .active, .accordion:hover {
+                background-color: #ccc;
+            }
+
+        .panel {
+            padding: 0 18px;
+            display: none;
+            background-color: white;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="dispecerUlogovan">
+        <div id="LogovanjeDiv" class="header">
+            <form id="LogovanjeForm">
+                <font size="4">
+                    <font size="7">
+                        <font color="yellow"><b>TAXI</b></font>SLUŽBA
+                    </font>
+                </font>
+                <table align="right">
+                    <tr>
+                        <td colspan="8">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td><input id="submitProfil" type="button" name="submitProfil" value="Profil" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td><input id="submitLogout" type="button" name="submitLogout" value="Izlogujte se" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="ContentDiv" class="row">
+            <div class="left">
+                <img class="img" align="left" src="http://www.letopdelhumour.fr/wp-content/uploads/2017/02/taxi-cab4.png" />
+            </div>
+            <div class="right">
+                <button class="accordion">Section 1</button>
+                <div class="panel">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+
+                <button class="accordion">Section 2</button>
+                <div class="panel">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+
+                <button class="accordion">Section 3</button>
+                <div class="panel">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#submitProfil').on('click', function () {
+            window.location.href = '/Home/EditProfile';
+        });
+
+        $('#submitLogout').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: '/api/Logout',
+                data: '',
+                success: function (data) {
+                    window.location.href = '/Home/Index';
+                    localStorage.setItem("session", null);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            console.log(user.KorisnickoIme);
+            console.log(localStorage.setItem("session", null));
+            $('input[type="text"]').val('');
+            window.location.href = '/Home/Index';
+        });
+
+    </script>
+    <script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+
+for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    });
+}
+    </script>
+</body>

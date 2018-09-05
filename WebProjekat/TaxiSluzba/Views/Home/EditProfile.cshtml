@@ -1,0 +1,150 @@
+﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="dispecerUlogovan">
+        <div id="LogovanjeDiv" class="header">
+            <form id="LogovanjeForm">
+                <font size="4">
+                    <font size="7">
+                        <font color="yellow"><b>TAXI</b></font>SLUŽBA
+                    </font>
+                </font>
+                <table align="right">
+                    <tr>
+                        <td colspan="8">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td><input id="submitLogout" type="button" name="submitLogout" value="Izlogujte se" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="ContentDiv" class="row">
+            <table align="center">
+                <tr>
+                    <td colspan="2" align="center">Profil:</td>
+                </tr>
+                <tr>
+                    <td>Korisničko ime: </td>
+                    <td><input id="korisnicko" type="text" name="korisnicko" disabled></td>
+                </tr>
+                <tr>
+                    <td>Lozinka: </td>
+                    <td><input id="lozinka" type="password" name="lozinka" required></td>
+                </tr>
+                <tr>
+                    <td>Ime: </td>
+                    <td><input id="ime" type="text" name="ime" required></td>
+                </tr>
+                <tr>
+                    <td>Prezime: </td>
+                    <td><input id="prezime" type="text" name="prezime" required></td>
+                </tr>
+                <tr>
+                    <td>Pol: </td>
+                    <td><input type="radio" name="pol" value=0> M &nbsp;&nbsp; <input type="radio" name="pol" value=1> Ž</td>
+                </tr>
+                <tr>
+                    <td>JMBG: </td>
+                    <td><input id="jmbg" type="text" name="jmbg" required></td>
+                </tr>
+                <tr>
+                    <td>Kontakt telefon: </td>
+                    <td><input id="telefon" type="tel" placeholder="0665556677" name="telefon" required></td>
+                </tr>
+                <tr>
+                    <td>E-mail: </td>
+                    <td><input id="email" type="email" name="email" required></td>
+                </tr>
+                <tr>
+                    <td><input id="submitProfile" type="button" name="submitProfile" value="Sačuvajte promene"></td>
+                    <td><input id="submitCancel" type="button" name="submitCancel" value="Nazad"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        $(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/api/Login',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    if (object != null) {
+                        $('#korisnicko').val(object.KorisnickoIme);
+                        $('#lozinka').val(object.Lozinka);
+                        $('#ime').val(object.Ime);
+                        $('#prezime').val(object.Prezime);
+                        $("input[name=pol][value=" + object.Pol + "]").attr('checked', true);
+                        $('#jmbg').val(object.Jmbg);
+                        $('#telefon').val(object.KontaktTelefon);
+                        $('#email').val(object.Email);
+                        console.log(object);
+                    }
+                },
+            });
+
+            $('#submitLogout').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Logout',
+                    data: '',
+                    success: function (data) {
+                        window.location.href = '/Home/Index';
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+                console.log(user.KorisnickoIme);
+                console.log(localStorage.setItem("session", null));
+                $('input[type="text"]').val('');
+                window.location.href = '/Home/Index';
+            });
+
+            $('#submitCancel').on('click', function () {
+                history.back(1);
+            });
+        });
+
+        $(function () {
+            $('#submitProfile').on('click', function () {
+                var user = {
+                    KorisnickoIme: $('#korisnicko').val(),
+                    Lozinka: $('#lozinka').val(),
+                    Ime: $('#ime').val(),
+                    Prezime: $('#prezime').val(),
+                    Pol: $('input[name=pol]:checked').val(),
+                    Jmbg: $('input[name=jmbg]').val(),
+                    KontaktTelefon: $('input[name=telefon]').val(),
+                    Email: $('input[name=email]').val()
+                };
+
+                var JSONObj = JSON.stringify(user);
+
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/Register',
+                    data: JSONObj,
+                    success: function (data) {
+                        var object = JSON.parse(data);
+                        alert('Izmene sačuvane');
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+                history.back(1);
+            })
+        });
+    </script>
+</body>

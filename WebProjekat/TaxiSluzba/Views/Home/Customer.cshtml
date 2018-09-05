@@ -1,0 +1,64 @@
+﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="dispecerUlogovan">
+        <div id="LogovanjeDiv" class="header">
+            <form id="LogovanjeForm">
+                <font size="4">
+                    <font size="7">
+                        <font color="yellow"><b>TAXI</b></font>SLUŽBA
+                    </font>
+                </font>
+                <table align="right">
+                    <tr>
+                        <td colspan="8">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td><input id="submitProfil" type="button" name="submitProfil" value="Profil" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td><input id="submitLogout" type="button" name="submitLogout" value="Izlogujte se" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="ContentDiv" class="row">
+            <div class="left">
+                <img class="img" align="left" src="http://www.letopdelhumour.fr/wp-content/uploads/2017/02/taxi-cab4.png" />
+            </div>
+            <div class="right">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('#submitProfil').on('click', function () {
+            window.location.href = '/Home/EditProfile';
+        });
+
+        $('#submitLogout').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: '/api/Logout',
+                data: '',
+                success: function (data) {
+                    window.location.href = '/Home/Index';
+                    localStorage.setItem("session", null);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            console.log(user.KorisnickoIme);
+            console.log(localStorage.setItem("session", null));
+            $('input[type="text"]').val('');
+            window.location.href = '/Home/Index';
+        });
+
+    </script>
+</body>
