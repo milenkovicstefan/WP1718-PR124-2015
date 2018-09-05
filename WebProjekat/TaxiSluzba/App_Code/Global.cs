@@ -12,12 +12,14 @@ namespace TaxiSluzba.App_Code
 {
     public static class Global
     {
-        private static Dictionary<string, Korisnik> dispeceri = new Dictionary<string, Korisnik>();
+        private static Dictionary<string, Dispecer> dispeceri = new Dictionary<string, Dispecer>();
         private static Dictionary<string, Korisnik> korisnici = new Dictionary<string, Korisnik>();
+        private static Dictionary<string, Vozac> vozaci = new Dictionary<string, Vozac>();
+        private static Dictionary<string, Musterija> musterije = new Dictionary<string, Musterija>();
         private static Dictionary<string, Korisnik> blokirani = new Dictionary<string, Korisnik>();
         private static List<Voznja> voznje = new List<Voznja>();
 
-        public static Dictionary<string, Korisnik> Dispeceri
+        public static Dictionary<string, Dispecer> Dispeceri
         {
             get
             {
@@ -66,6 +68,32 @@ namespace TaxiSluzba.App_Code
             set
             {
                 voznje = value;
+            }
+        }
+
+        public static Dictionary<string, Vozac> Vozaci
+        {
+            get
+            {
+                return vozaci;
+            }
+
+            set
+            {
+                vozaci = value;
+            }
+        }
+
+        public static Dictionary<string, Musterija> Musterije
+        {
+            get
+            {
+                return musterije;
+            }
+
+            set
+            {
+                musterije = value;
             }
         }
     }

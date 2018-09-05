@@ -52,8 +52,8 @@ namespace TaxiSluzba
                     s += nextLine;
                     if (nextLine.Contains("}"))
                     {
-                        Korisnik korisnik = JsonConvert.DeserializeObject<Korisnik>(s);
-                        Global.Dispeceri.Add(korisnik.KorisnickoIme, korisnik);
+                        Dispecer dispecer = JsonConvert.DeserializeObject<Dispecer>(s);
+                        Global.Dispeceri.Add(dispecer.KorisnickoIme, dispecer);
                         s = "";
                     }
                 }

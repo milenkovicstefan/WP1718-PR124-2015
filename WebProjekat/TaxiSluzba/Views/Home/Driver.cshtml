@@ -1,12 +1,45 @@
 ﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
 <script src="~/Scripts/jquery.validate.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrjeABCsOwW1rhi7eW6_b_fWF8OK2HeiA"></script>
+<script type="text/javascript" src="~/Scripts/jquery.googlemap.js"></script>
 <head>
     <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        .locBtn {
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            width: 12em;
+            padding-left: 2em;
+            padding-right: 2em;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            margin-top: 0.5em;
+            margin-left: 73%;
+        }
+
+        .navbarBtn {
+            background-color: yellow;
+            color: black;
+            cursor: pointer;
+            border: 1px solid gray;
+            text-align: center;
+            outline: solid;
+            font-size: 14px;
+            font-weight: 600;
+            width: 12em;
+            padding-left: 2em;
+            padding-right: 2em;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            margin-top: 0.66em;
+        }
+
         .accordion {
-            background-color: #eee;
-            color: #444;
+            background-color: #f6f6f6;
+            color: #1e1e1e;
             cursor: pointer;
             padding: 18px;
             width: 100%;
@@ -18,19 +51,37 @@
         }
 
             .active, .accordion:hover {
-                background-color: #ccc;
+                background-color: #1e1e1e;
+                color: #f6f6f6;
             }
+
+        button.accordion.active, button.accordion:hover {
+            background-color: #1e1e1e;
+            color: #f6f6f6;
+        }
+
+        button.accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        button.accordion.active:after {
+            content: "\2212";
+        }
 
         .panel {
             padding: 0 18px;
             display: none;
-            background-color: white;
+            background-color: lightgray;
             overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <div id="dispecerUlogovan">
+    <div id="vozacUlogovan">
         <div id="LogovanjeDiv" class="header">
             <form id="LogovanjeForm">
                 <font size="4">
@@ -39,44 +90,97 @@
                     </font>
                 </font>
                 <table align="right">
+
                     <tr>
-                        <td colspan="8">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td><input id="submitProfil" type="button" name="submitProfil" value="Profil" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
-                        <td><input id="submitLogout" type="button" name="submitLogout" value="Izlogujte se" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td><input class="navbarBtn" id="submitProfil" type="button" name="submitProfil" value="Profil"></td>
+                        <td><input class="navbarBtn" id="submitLogout" type="button" name="submitLogout" value="Izlogujte se"></td>
                         <td colspan="7">&nbsp;</td>
                     </tr>
                 </table>
             </form>
         </div>
-        <div id="ContentDiv" class="row">
+        <div id="RegistracijaDiv" class="row">
             <div class="left">
-                <img class="img" align="left" src="http://www.letopdelhumour.fr/wp-content/uploads/2017/02/taxi-cab4.png" />
+                <div id="map" style="height:440px;width:80%;margin-left:7em;margin-top:1.2em;position:fixed;"></div>
+                <button class="locBtn" id="find_btn">Locirajte se</button>
+                <button class="locBtn" id="saveLocation">Sačuvajte lokaciju</button>
+                <input type="hidden" id="latitude" name="latitude" value=45.24239>
+                <input type="hidden" id="longitude" name="longitude" value=19.8426221>
+                <input type="hidden" id="address" name="address" value="">
             </div>
             <div class="right">
-                <button class="accordion">Section 1</button>
+                <button class="accordion">Prihvatite vožnju</button>
                 <div class="panel">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <form id="prihvatiVožnju">
+                        Neobrađeni zahtevi:
+                        <br />
+                        <select name="nedodeljeneVoznje" id="nedodeljeneVoznje" size="5" style="width:350px"></select>
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitPrihvatiVoznju" type="button" name="submitPrihvatiVoznju" value="Prihvatite vožnju">
+                    </form>
                 </div>
-
-                <button class="accordion">Section 2</button>
+                <button class="accordion">Završite vožnju</button>
                 <div class="panel">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <form id="uspesnaVoznja">
+                        Prihvaćene/dodeljene vožnje:
+                        <br />
+                        <select name="dodeljeneVoznjeOk" id="dodeljeneVoznjeOk" size="5" style="width:350px"></select>
+                        <br />
+                        Iznos:
+                        <br />
+                        <input style="width:350px;cursor:text;" id="voznjaOkIznos" type="number" name="voznjaOkIznos">
+                        <br />
+                        Komentar:
+                        <br />
+                        <input style="width:350px;height:80px;cursor:text;" id="voznjaOkKomentar" type="text" name="voznjaOkKomentar">
+                        <br />
+                        Ocena:
+                        <br />
+                        <select style="width:350px;" id="ocena" name="ocena">
+                            <optgroup label="ocena">
+                                <option>&nbsp;</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                            </optgroup>
+                        </select>
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="voznjaOk" type="button" name="voznjaOk" value="Završite vožnju">
+                    </form>
                 </div>
-
-                <button class="accordion">Section 3</button>
+                <button class="accordion">Neuspešna vožnja</button>
                 <div class="panel">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <form id="neuspesnaVoznja">
+                        Prihvaćene/dodeljene vožnje:
+                        <br />
+                        <select name="dodeljeneVoznjeCancel" id="dodeljeneVoznjeCancel" size="5" style="width:350px"></select>
+                        <br />
+                        Komentar:
+                        <br />
+                        <input style="width:350px;height:80px;cursor:text;" id="voznjaCancelKomentar" type="text" name="voznjaCancelKomentar">
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="voznjaCancel" type="button" name="voznjaCancel" value="Neuspešna vožnja">
+                    </form>
+                </div>
+                <button class="accordion">Prikažite vožnje</button>
+                <div class="panel">
+                    <form id="prikaziVoznje">
+                        <select name="voznje" id="voznje" size="5" style="width:350px"></select>
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitPrikaziVoznju" type="button" name="submitPrikaziVoznju" value="Informacije o vožnji">
+                    </form>
+                </div>
+                <button class="accordion">Pretražite vožnju</button>
+                <div class="panel">
+                    <p>a</p>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        $('#submitProfil').on('click', function () {
-            window.location.href = '/Home/EditProfile';
-        });
 
+    <script>
         $('#submitLogout').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -84,7 +188,6 @@
                 data: '',
                 success: function (data) {
                     window.location.href = '/Home/Index';
-                    localStorage.setItem("session", null);
                 },
                 error: function (response) {
                     alert(response.responseText);
@@ -95,23 +198,151 @@
             console.log(localStorage.setItem("session", null));
             $('input[type="text"]').val('');
             window.location.href = '/Home/Index';
+            localStorage.setItem("session", null);
         });
 
+        $('#submitProfil').on('click', function () {
+            window.location.href = '/Home/EditProfile';
+        });
     </script>
-    <script>
-var acc = document.getElementsByClassName("accordion");
-var i;
 
-for (i = 0; i < acc.length; i++) {
-    acc[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.display === "block") {
-            panel.style.display = "none";
-        } else {
-            panel.style.display = "block";
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
         }
-    });
-}
     </script>
+
+    <script>
+        $(function () {
+            $("#map").googleMap({
+                //zoom: -2, // Initial zoom level (optional)
+                type: "ROADMAP" // Map type (optional)
+            });
+            $("#map").addMarker({
+                coords: [45.24239, 19.8426221], // GPS coords
+                draggable: true,
+                success: function (e) {
+                    $("#latitude").val(e.lat);
+                    $("#longitude").val(e.lon);
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.lat + ',' + e.lon + '&sensor=true',
+                        success: function (data) {
+                            $('#address').val(data.results[0].formatted_address);
+                        },
+                    });
+                },
+                id: 'marker1' // Unique ID for your marker
+            });
+        })
+    </script>
+
+    <script>
+        $("#find_btn").click(function () { //user clicks button
+            if ("geolocation" in navigator) { //check geolocation available
+                $("#map").removeMarker("marker1");
+                //try to get user current location using getCurrentPosition() method
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    $("#map").addMarker({
+                        coords: [position.coords.latitude, position.coords.longitude], // GPS coords
+                        draggable: true,
+                        success: function (e) {
+                            $("#latitude").val(e.lat);
+                            $("#longitude").val(e.lon);
+                            $.ajax({
+                                type: 'GET',
+                                url: 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + e.lat + ',' + e.lon + '&sensor=true',
+                                success: function (data) {
+                                    $('#address').val(data.results[0].formatted_address);
+                                },
+                            });
+                        },
+                        id: 'marker1' // Unique ID for your marker
+                    });
+                    $('#latitude').val(position.coords.latitude);
+                    $('#longitude').val(position.coords.longitude);
+                    //$("#result").html("Found your location <br />Lat : " + position.coords.latitude + " </br>Lang :" + position.coords.longitude);
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&sensor=true',
+                        success: function (data) {
+                            $('#address').val(data.results[0].formatted_address);
+                        },
+                    });
+                });
+
+
+            } else {
+                console.log("Browser doesn't support geolocation!");
+            }
+        });
+    </script>
+
+    <script>
+        $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Customer/GetRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#voznje").append('<option>' + array[i] + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
+        })
+    </script>
+
+    <script>
+        $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Customer/GetUnassignedRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#nedodeljeneVoznje").append('<option>' + array[i] + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
+        })
+    </script>
+
+    <script>
+        $(function () {
+            var latitude = $('#latitude').val();
+            var longitude = $('#longitude').val();
+            $.ajax({
+                type: 'GET',
+                url: 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&sensor=true',
+                success: function (data) {
+                    $('#address').val(data.results[0].formatted_address);
+                },
+            });
+
+        })
+    </script>
+
+
 </body>

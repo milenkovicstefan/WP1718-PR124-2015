@@ -101,7 +101,7 @@
         </div>
         <div id="RegistracijaDiv" class="row">
             <div class="left">
-                <div id="map" style="height:480px;width:80%;margin-left:7em;margin-top:1.2em;position:fixed;"></div>
+                <div id="map" style="height:440px;width:80%;margin-left:7em;margin-top:1.2em;position:fixed;"></div>
                 <button class="locBtn" id="find_btn">Locirajte se</button>
                 <input type="hidden" id="latitude" name="latitude" value=45.24239>
                 <input type="hidden" id="longitude" name="longitude" value=19.8426221>
@@ -451,6 +451,34 @@
                 window.location.href = '/Home/Admin';
             });
 
+        })
+    </script>
+
+    <script>
+        $(function () {
+            var lokacija = {
+                Adresa: "",
+                KoordinataX: $('#latitude').val(),
+                KoordinataY: $('#longitude').val()
+            };
+            console.log(lokacija);
+            var JSONObj = JSON.stringify(lokacija);
+            console.log(JSONObj);
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Admin/GetClosestFreeDrivers',
+                data: JSONObj,
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#slobodniVozaciKreiranje").append('<option>' + array[i] + '</option>');
+                            $("#slobodniVozaciDodela").append('<option>' + array[i] + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
         })
     </script>
 

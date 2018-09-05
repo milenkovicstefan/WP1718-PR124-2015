@@ -61,13 +61,19 @@ namespace TaxiSluzba.Controllers
                 };
                 if (Global.Dispeceri.Keys.Contains(korisnicko))
                 {
-                    Global.Dispeceri[korisnicko] = temp;
+                    Global.Dispeceri[korisnicko] = (Dispecer)temp;
                     response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], Formatting.Indented)));
 
                 }
-
+                else if (Global.Korisnici[korisnicko].Uloga == Uloga.VOZAC)
+                {
+                    Global.Vozaci[korisnicko] = (Vozac)temp;
+                    Global.Korisnici[korisnicko] = temp;
+                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], Formatting.Indented)));
+                }
                 else
                 {
+                    Global.Musterije[korisnicko] = (Musterija)temp;
                     Global.Korisnici[korisnicko] = temp;
                     response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], Formatting.Indented)));
                 }

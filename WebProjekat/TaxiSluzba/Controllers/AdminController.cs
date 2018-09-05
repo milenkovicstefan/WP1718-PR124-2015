@@ -139,14 +139,44 @@ namespace TaxiSluzba.Controllers
 
             return response;
         }
-
-        [HttpGet, Route("api/Admin/GetClosestFreeDrivers")]
-        public IHttpActionResult GetClosestFreeDrivers()
+        public class test
+        {
+            public double lat;
+            public double lon;
+        }
+        [HttpPut, Route("api/Admin/GetClosestFreeDrivers")]
+        public IHttpActionResult GetClosestFreeDrivers(HttpRequestMessage value)
         {
             IHttpActionResult response;
+            Lokacija l = JsonConvert.DeserializeObject<Lokacija>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
+            List<string> najbliziVozaci = new List<string>();
 
             
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("", Formatting.Indented)));
+                List<Vozac> slobodniVozaci = new List<Vozac>();
+                Dictionary<double, string> udaljenostVozaca = new Dictionary<double, string>();
+
+                foreach (var vozac in Global.Vozaci.Values)
+                {
+                    if (vozac.Voznje.All(v => v.StatusVoznje == Status.USPESNA || v.StatusVoznje == Status.NEUSPESNA) && !Global.Blokirani.Keys.Contains(vozac.KorisnickoIme))
+                    {
+                        slobodniVozaci.Add(vozac);
+                    }
+                }
+
+                foreach (var vozac in slobodniVozaci)
+                {
+                    double udaljenost = Math.Sqrt(Math.Pow((l.KoordinataX - vozac.Lokacija.KoordinataX), 2) + Math.Pow((l.KoordinataY - vozac.Lokacija.KoordinataY), 2));
+                    udaljenostVozaca.Add(udaljenost, vozac.KorisnickoIme);
+                }
+
+                udaljenostVozaca = udaljenostVozaca.OrderBy(dic => dic.Key).ToDictionary(dic => dic.Key, dic => dic.Value);
+
+                foreach (var item in udaljenostVozaca.Take(5))
+                {
+                    najbliziVozaci.Add(item.Value);
+                }
+            
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(najbliziVozaci, Formatting.Indented)));
 
             return response;
         }

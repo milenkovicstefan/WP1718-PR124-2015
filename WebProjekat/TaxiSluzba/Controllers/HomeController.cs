@@ -18,7 +18,7 @@ namespace TaxiSluzba.Controllers
             
             ViewBag.Title = "Taxi služba";
 
-            return View(Global.Dispeceri);
+            return View();
         }
 
         public ActionResult Admin()
