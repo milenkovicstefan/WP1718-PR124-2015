@@ -17,7 +17,7 @@ namespace TaxiSluzba.App_Code
         private static Dictionary<string, Vozac> vozaci = new Dictionary<string, Vozac>();
         private static Dictionary<string, Musterija> musterije = new Dictionary<string, Musterija>();
         private static Dictionary<string, Korisnik> blokirani = new Dictionary<string, Korisnik>();
-        private static List<Voznja> voznje = new List<Voznja>();
+        private static Dictionary<string, Voznja> voznje = new Dictionary<string, Voznja>();
 
         public static Dictionary<string, Dispecer> Dispeceri
         {
@@ -58,19 +58,6 @@ namespace TaxiSluzba.App_Code
             }
         }
 
-        public static List<Voznja> Voznje
-        {
-            get
-            {
-                return voznje;
-            }
-
-            set
-            {
-                voznje = value;
-            }
-        }
-
         public static Dictionary<string, Vozac> Vozaci
         {
             get
@@ -94,6 +81,19 @@ namespace TaxiSluzba.App_Code
             set
             {
                 musterije = value;
+            }
+        }
+
+        public static Dictionary<string, Voznja> Voznje
+        {
+            get
+            {
+                return voznje;
+            }
+
+            set
+            {
+                voznje = value;
             }
         }
     }

@@ -37,12 +37,20 @@ namespace TaxiSluzba.Controllers
             if (Global.Korisnici.Keys.Contains(korisnicko) && Global.Korisnici[korisnicko].Lozinka.Equals(lozinka))
             {
                 HttpContext.Current.Session["korisnik"] = Global.Korisnici[korisnicko];
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
             else if (Global.Dispeceri.Keys.Contains(korisnicko) && Global.Dispeceri[korisnicko].Lozinka.Equals(lozinka))
             {
                 HttpContext.Current.Session["korisnik"] = Global.Dispeceri[korisnicko];
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
             else
             {

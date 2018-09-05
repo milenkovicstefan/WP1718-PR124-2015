@@ -162,7 +162,8 @@
                     <form id="kreirajVoznju">
                         Tip automobila:
                         <br />
-                        <select name="tipAutomobila" id="tipAutomobila" size="2" style="width:350px">
+                        <select name="tipAutomobila" id="tipAutomobila" style="width:350px">
+                            <option>Nebitno</option>
                             <option>Putničko</option>
                             <option>Kombi</option>
                         </select>
@@ -248,6 +249,33 @@
                 window.location.href = '/Home/EditProfile';
             });
 
+            $('#submitKreirajVoznju').on('click', function () {
+                var voznja = {
+                    KoordinataX: $('#latitude').val(),
+                    KoordinataY: $('#longitude').val(),
+                    Adresa: $('#address').val(),
+                    Vozac: $('#slobodniVozaciKreiranje').val(),
+                    TipAutomobila: $('#tipAutomobila').val(),
+                };
+
+                var JSONObj = JSON.stringify(voznja);
+                console.log(JSONObj);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Admin/CreateRide',
+                    data: JSONObj,
+                    success: function (data) {
+                        var object = JSON.parse(data);
+                        window.location.href = '/Home/Admin'
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+            })
+
             $('#submitRegistracija').on('click', function () {
                 var user = {
                     KorisnickoIme: $('#korisnicko').val(),
@@ -280,6 +308,7 @@
                 window.location.href = '/Home/Admin';
             })
         });
+
 
     </script>
 
@@ -494,7 +523,7 @@
                             var array = JSON.parse(data);
                             if (array != null) {
                                 for (var i in array) {
-                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                    $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
                                 }
                                 console.log(array);
                             }
@@ -509,7 +538,7 @@
                             var array = JSON.parse(data);
                             if (array != null) {
                                 for (var i in array) {
-                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                    $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
                                 }
                                 console.log(array);
                             }
@@ -531,7 +560,7 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#voznje").append('<option>' + array[i] + '</option>');
+                            $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
                         }
                         console.log(array);
                     }
@@ -551,7 +580,7 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#nedodeljeneVoznje").append('<option>' + array[i] + '</option>');
+                            $("#nedodeljeneVoznje").append('<option>' + array[i].VremePorudzbine + '</option>');
                         }
                         console.log(array);
                     }

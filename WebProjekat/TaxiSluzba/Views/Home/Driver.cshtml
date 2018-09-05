@@ -130,23 +130,6 @@
                         <br />
                         <input style="width:350px;cursor:text;" id="voznjaOkIznos" type="number" name="voznjaOkIznos">
                         <br />
-                        Komentar:
-                        <br />
-                        <input style="width:350px;height:80px;cursor:text;" id="voznjaOkKomentar" type="text" name="voznjaOkKomentar">
-                        <br />
-                        Ocena:
-                        <br />
-                        <select style="width:350px;" id="ocena" name="ocena">
-                            <optgroup label="ocena">
-                                <option>&nbsp;</option>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </optgroup>
-                        </select>
-                        <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="voznjaOk" type="button" name="voznjaOk" value="Završite vožnju">
                     </form>
                 </div>
@@ -291,46 +274,6 @@
 
     <script>
         $(function () {
-
-            $.ajax({
-                type: 'GET',
-                url: '/api/Customer/GetRides',
-                success: function (data) {
-                    var array = JSON.parse(data);
-                    if (array != null) {
-                        for (var i in array) {
-                            $("#voznje").append('<option>' + array[i] + '</option>');
-                        }
-                        console.log(array);
-                    }
-                },
-            });
-
-        })
-    </script>
-
-    <script>
-        $(function () {
-
-            $.ajax({
-                type: 'GET',
-                url: '/api/Customer/GetUnassignedRides',
-                success: function (data) {
-                    var array = JSON.parse(data);
-                    if (array != null) {
-                        for (var i in array) {
-                            $("#nedodeljeneVoznje").append('<option>' + array[i] + '</option>');
-                        }
-                        console.log(array);
-                    }
-                },
-            });
-
-        })
-    </script>
-
-    <script>
-        $(function () {
             var latitude = $('#latitude').val();
             var longitude = $('#longitude').val();
             $.ajax({
@@ -341,8 +284,117 @@
                 },
             });
 
+        });
+    </script>
+
+    <script>
+        $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Driver/GetDriverRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
         })
     </script>
 
+    <script>
+        $(function () {
 
+            $.ajax({
+                type: 'GET',
+                url: '/api/Driver/GetActiveDriverRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#dodeljeneVoznjeOk").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#dodeljeneVoznjeCancel").append('<option>' + array[i].VremePorudzbine + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
+        })
+    </script>
+    <script>
+        $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Driver/GetUnassignedRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#nedodeljeneVoznje").append('<option>' + array[i].VremePorudzbine + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
+        })
+    </script>
+
+    <script>
+        $('#voznjaOk').on('click', function () {
+            var data = {
+                VremeVoznje: $('#dodeljeneVoznjeOk').val(),
+                Adresa: $('#address').val(),
+                KoordinataX: $('#latitude').val(),
+                KoordinataY: $('#longitude').val(),
+                Iznos: $('#voznjaOkIznos').val()
+            };
+
+            var JSONObj = JSON.stringify(data);
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Driver/RideFinished',
+                data: JSONObj,
+                success: function (data) {
+                    window.location.href = '/Home/Driver';
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $('#voznjaCancel').on('click', function () {
+            var data = {
+                VremeVoznje: $('#dodeljeneVoznjeCancel').val(),
+                Komentar: $('#voznjaCancelKomentar').val()
+            };
+
+            var JSONObj = JSON.stringify(data);
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Driver/RideCanceled',
+                data: JSONObj,
+                success: function (data) {
+                    window.location.href = '/Home/Driver';
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        });
+
+    </script>
 </body>

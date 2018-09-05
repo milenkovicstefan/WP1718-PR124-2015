@@ -24,6 +24,12 @@ namespace TaxiSluzba
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             UcitajDispecere();
+            UcitajMusterije();
+            UcitajVozace();
+            UcitajVoznje();
+            var config = GlobalConfiguration.Configuration;
+            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling
+= Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         }
 
         protected void Application_PostAuthorizeRequest()
@@ -59,5 +65,70 @@ namespace TaxiSluzba
                 }
             }
         }
+
+        protected void UcitajVozace()
+        {
+            string path = Server.MapPath("~/App_Data/Vozaci.txt");
+
+            using (var sr = new StreamReader(path))
+            {
+                string s = "";
+                string nextLine = "";
+                while ((nextLine = sr.ReadLine()) != null)
+                {
+                    s += nextLine;
+                    if (nextLine.Contains("}"))
+                    {
+                        Vozac vozac = JsonConvert.DeserializeObject<Vozac>(s);
+                        Global.Vozaci.Add(vozac.KorisnickoIme, vozac);
+                        s = "";
+                    }
+                }
+            }
+        }
+
+        protected void UcitajMusterije()
+        {
+            string path = Server.MapPath("~/App_Data/Musterije.txt");
+
+            using (var sr = new StreamReader(path))
+            {
+                string s = "";
+                string nextLine = "";
+                while ((nextLine = sr.ReadLine()) != null)
+                {
+                    s += nextLine;
+                    if (nextLine.Contains("}"))
+                    {
+                        Musterija musterija = JsonConvert.DeserializeObject<Musterija>(s);
+                        Global.Musterije.Add(musterija.KorisnickoIme, musterija);
+                        s = "";
+                    }
+                }
+            }
+        }
+
+        protected void UcitajVoznje()
+        {
+            string path = Server.MapPath("~/App_Data/Voznje.txt");
+
+            using (var sr = new StreamReader(path))
+            {
+                string s = "";
+                string nextLine = "";
+                while ((nextLine = sr.ReadLine()) != null)
+                {
+                    s += nextLine;
+                    if (nextLine.Contains("}"))
+                    {
+                        Voznja voznja = JsonConvert.DeserializeObject<Voznja>(s);
+                        Global.Voznje.Add(voznja.VremePorudzbine.ToString(), voznja);
+                        s = "";
+                    }
+                }
+            }
+        }
+
+
     }
 }

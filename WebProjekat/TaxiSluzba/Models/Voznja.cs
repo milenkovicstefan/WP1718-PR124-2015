@@ -13,8 +13,9 @@ namespace TaxiSluzba.Models
         private Musterija musterija;
         private Lokacija odrediste;
         private Dispecer dispecer;
+        private Vozac vozac;
         private double iznos;
-        private Komentar komentar;
+        private List<Komentar> komentari = new List<Komentar>();
         private Status statusVoznje;
 
         #region Properties
@@ -109,18 +110,6 @@ namespace TaxiSluzba.Models
             }
         }
 
-        public Komentar Komentar
-        {
-            get
-            {
-                return komentar;
-            }
-
-            set
-            {
-                komentar = value;
-            }
-        }
 
         public Status StatusVoznje
         {
@@ -132,6 +121,32 @@ namespace TaxiSluzba.Models
             set
             {
                 statusVoznje = value;
+            }
+        }
+
+        public Vozac Vozac
+        {
+            get
+            {
+                return vozac;
+            }
+
+            set
+            {
+                vozac = value;
+            }
+        }
+
+        public List<Komentar> Komentari
+        {
+            get
+            {
+                return komentari;
+            }
+
+            set
+            {
+                komentari = value;
             }
         }
         #endregion

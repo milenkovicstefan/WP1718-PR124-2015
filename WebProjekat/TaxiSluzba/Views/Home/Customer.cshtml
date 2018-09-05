@@ -138,6 +138,8 @@
                         <br />
                         <select name="nedodeljeneVoznjeOtkazi" id="nedodeljeneVoznjeOtkazi" size="5" style="width:350px"></select>
                         <br />
+                        <input style="width:350px;height:80px;cursor:text;" id="komentarOtkazi" type="text" name="komentarOtkazi">
+                        <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitOtkaziVoznju" type="button" name="submitOtkaziVoznju" value="Poništite zahtev">
                     </form>
                 </div>
@@ -266,45 +268,7 @@
         });
     </script>
 
-    <script>
-        $(function () {
 
-            $.ajax({
-                type: 'GET',
-                url: '/api/Customer/GetRides',
-                success: function (data) {
-                    var array = JSON.parse(data);
-                    if (array != null) {
-                        for (var i in array) {
-                            $("#voznje").append('<option>' + array[i] + '</option>');
-                        }
-                        console.log(array);
-                    }
-                },
-            });
-
-        })
-    </script>
-
-    <script>
-        $(function () {
-
-            $.ajax({
-                type: 'GET',
-                url: '/api/Customer/GetUnassignedRides',
-                success: function (data) {
-                    var array = JSON.parse(data);
-                    if (array != null) {
-                        for (var i in array) {
-                            $("#nedodeljeneVoznje").append('<option>' + array[i] + '</option>');
-                        }
-                        console.log(array);
-                    }
-                },
-            });
-
-        })
-    </script>
 
     <script>
         $(function () {
@@ -321,5 +285,94 @@
         })
     </script>
 
+    <script>
+        $(function () {
 
+            $.ajax({
+                type: 'GET',
+                url: '/api/Customer/GetCustomerRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
+        })
+    </script>
+
+    <script>
+        $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Customer/GetActiveCustomerRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#nedodeljeneVoznjeIzmeni").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#nedodeljeneVoznjeOtkazi").append('<option>' + array[i].VremePorudzbine + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
+            $('#submitZahtevajVoznju').on('click', function () {
+                var voznja = {
+                    KoordinataX: $('#latitude').val(),
+                    KoordinataY: $('#longitude').val(),
+                    Adresa: $('#address').val(),
+                    TipAutomobila: $('#tipAutomobila').val(),
+                };
+
+                var JSONObj = JSON.stringify(voznja);
+                console.log(JSONObj);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Customer/CreateRide',
+                    data: JSONObj,
+                    success: function (data) {
+                        var object = JSON.parse(data);
+                        window.location.href = '/Home/Customer'
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+            })
+
+        })
+    </script>
+
+    <script>
+        $('#submitOtkaziVoznju').on('click', function () {
+            var data = {
+                VremeVoznje: $('#nedodeljeneVoznjeOtkazi').val(),
+                Komentar: $('#otkaziKomentar').val()
+            };
+
+            var JSONObj = JSON.stringify(data);
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Customer/CancelRide',
+                data: JSONObj,
+                success: function (data) {
+                    window.location.href = '/Home/Customer';
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        });
+
+    </script>
 </body>

@@ -57,13 +57,18 @@ namespace TaxiSluzba.Controllers
             Korisnik admin = (Korisnik)HttpContext.Current.Session["korisnik"];
             List<Voznja> voznje = new List<Voznja>();
 
-            foreach (var voznja in Global.Voznje)
+            foreach (var voznja in Global.Voznje.Values)
             {
+                if (voznja.Dispecer != null)
                 if (voznja.Dispecer.KorisnickoIme == admin.KorisnickoIme)
                     voznje.Add(voznja);
             }
 
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
@@ -76,13 +81,17 @@ namespace TaxiSluzba.Controllers
             Korisnik admin = (Korisnik)HttpContext.Current.Session["korisnik"];
             List<Voznja> voznje = new List<Voznja>();
 
-            foreach (var voznja in Global.Voznje)
+            foreach (var voznja in Global.Voznje.Values)
             {
                 if (voznja.StatusVoznje == Status.KREIRANA_NA_CEKANJU)
                     voznje.Add(voznja);
             }
 
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
@@ -94,7 +103,7 @@ namespace TaxiSluzba.Controllers
 
             List<Voznja> voznje = new List<Voznja>();
 
-            foreach (var voznja in Global.Voznje)
+            foreach (var voznja in Global.Voznje.Values)
             {
                 voznje.Add(voznja);
             }
@@ -119,6 +128,69 @@ namespace TaxiSluzba.Controllers
                 Global.Blokirani.Add(k.KorisnickoIme, Global.Korisnici[k.KorisnickoIme]);
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Blokirani[k.KorisnickoIme], Formatting.Indented)));
             }
+
+            return response;
+        }
+
+        [HttpPost, Route("api/Admin/CreateRide")]
+        public IHttpActionResult CreateRide(HttpRequestMessage value)
+        {
+            IHttpActionResult response;
+            //Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
+            var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
+            double koordinataX;
+            Double.TryParse(data["KoordinataX"].ToString(), out koordinataX);
+            double koordinataY;
+            Double.TryParse(data["KoordinataY"].ToString(), out koordinataY);
+            string adresa = data["Adresa"].ToString();
+            string vozacKorisnicko = data["Vozac"].ToString();
+            string tip = data["TipAutomobila"].ToString();
+
+            string[] adresaDelovi = adresa.Split(',');
+            string[] ulicaBroj = adresaDelovi[0].Split(' ');
+            int broj = Int32.Parse(ulicaBroj.Last());
+            string ulica = "";
+            for (int i = 0; i < ulicaBroj.Length - 1; i++)
+                ulica += ulicaBroj[i] + " ";
+            ulica = ulica.Trim();
+            string[] mestoPostanski = adresaDelovi[1].Split(' ');
+            int postanski = Int32.Parse(mestoPostanski.Last());
+            string mesto = "";
+            for (int i = 0; i < mestoPostanski.Length - 1; i++)
+                mesto += mestoPostanski[i] + " ";
+            mesto = mesto.Trim();
+
+            Voznja v = new Voznja();
+            Korisnik dispecer = (Korisnik)HttpContext.Current.Session["korisnik"];
+            v.Dispecer = Global.Dispeceri[dispecer.KorisnickoIme];
+            Adresa a = new Adresa();
+            a.Broj = broj;
+            a.Mesto = mesto;
+            a.PostanskiBroj = postanski;
+            a.Ulica = ulica;
+            Lokacija l = new Lokacija();
+            l.Adresa = a;
+            l.KoordinataX = koordinataX;
+            l.KoordinataY = koordinataY;
+            v.PocetnaLokacija = l;
+            if (tip.Equals("Putničko"))
+                v.ZeljeniTipVozila = TipVozila.PUTNICKO;
+            else if (tip.Equals("Kombi"))
+                v.ZeljeniTipVozila = TipVozila.KOMBI;
+            v.Vozac = Global.Vozaci[vozacKorisnicko];
+            v.StatusVoznje = Status.FORMIRANA;
+            v.VremePorudzbine = DateTime.Now;
+            Global.Voznje.Add(v.VremePorudzbine.ToString(), v);
+            Global.Vozaci[vozacKorisnicko].Voznje.Add(v);
+            Global.Korisnici[vozacKorisnicko].Voznje.Add(v);
+            Global.Dispeceri[dispecer.KorisnickoIme].Voznje.Add(v);
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented,
+                
+            })));     
 
             return response;
         }
@@ -153,7 +225,7 @@ namespace TaxiSluzba.Controllers
 
             
                 List<Vozac> slobodniVozaci = new List<Vozac>();
-                Dictionary<double, string> udaljenostVozaca = new Dictionary<double, string>();
+                Dictionary<string, double> udaljenostVozaca = new Dictionary<string, double>();
 
                 foreach (var vozac in Global.Vozaci.Values)
                 {
@@ -166,17 +238,21 @@ namespace TaxiSluzba.Controllers
                 foreach (var vozac in slobodniVozaci)
                 {
                     double udaljenost = Math.Sqrt(Math.Pow((l.KoordinataX - vozac.Lokacija.KoordinataX), 2) + Math.Pow((l.KoordinataY - vozac.Lokacija.KoordinataY), 2));
-                    udaljenostVozaca.Add(udaljenost, vozac.KorisnickoIme);
+                    udaljenostVozaca.Add(vozac.KorisnickoIme, udaljenost);
                 }
 
-                udaljenostVozaca = udaljenostVozaca.OrderBy(dic => dic.Key).ToDictionary(dic => dic.Key, dic => dic.Value);
+                udaljenostVozaca = udaljenostVozaca.OrderBy(dic => dic.Value).ToDictionary(dic => dic.Key, dic => dic.Value);
 
                 foreach (var item in udaljenostVozaca.Take(5))
                 {
-                    najbliziVozaci.Add(item.Value);
+                    najbliziVozaci.Add(item.Key);
                 }
             
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(najbliziVozaci, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(najbliziVozaci, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
