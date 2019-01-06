@@ -149,6 +149,8 @@
                         <br />
                         <select name="nedodeljeneVoznjeOtkazi" id="nedodeljeneVoznjeOtkazi" size="5" style="width:350px"></select>
                         <br />
+                        Komentar:
+                        <br />
                         <input style="width:350px;height:80px;cursor:text;" id="komentarOtkazi" type="text" name="komentarOtkazi">
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitOtkaziVoznju" type="button" name="submitOtkaziVoznju" value="Poništite zahtev">
@@ -242,6 +244,7 @@
             })
         });
         addMarker(19.8426221, 45.24239);
+        reverseGeocode([19.8426221, 45.24239])
 
         function reverseGeocode(coords) {
             fetch('http://nominatim.openstreetmap.org/reverse?format=json&lon=' + coords[0] + '&lat=' + coords[1])
@@ -270,7 +273,6 @@
             if (features != null && features.length > 0) {
                 for (x in features) {
                     var properties = features[x].getProperties();
-                    console.log(properties);
                     var id = properties.id;
                     markerSource.removeFeature(features[x]);
                 }
@@ -306,6 +308,29 @@
     <script>
         $(function () {
 
+            $('#submitPrikaziVoznju').on('click', function () {
+
+                var ride = {
+                    Voznja: $('#voznje').val(),
+                };
+
+                var JSONObj = JSON.stringify(ride);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Ride',
+                    data: JSONObj,
+                    success: function (data) {
+
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+                window.location.href = '/Home/RideInfo';
+            });
+
             $.ajax({
                 type: 'GET',
                 url: '/api/Customer/GetCustomerRides',
@@ -313,7 +338,7 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#voznje").append('<option>' + array[i] + '</option>');
                         }
                         console.log(array);
                     }
@@ -333,8 +358,8 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#nedodeljeneVoznjeIzmeni").append('<option>' + array[i].VremePorudzbine + '</option>');
-                            $("#nedodeljeneVoznjeOtkazi").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#nedodeljeneVoznjeIzmeni").append('<option>' + array[i] + '</option>');
+                            $("#nedodeljeneVoznjeOtkazi").append('<option>' + array[i] + '</option>');
                         }
                         console.log(array);
                     }

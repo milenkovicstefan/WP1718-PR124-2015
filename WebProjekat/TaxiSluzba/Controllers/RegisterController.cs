@@ -45,7 +45,8 @@ namespace TaxiSluzba.Controllers
                     v.Lokacija.Adresa.Broj = 131;
                     v.Lokacija.Adresa.Mesto = "Novi Sad";
                     v.Lokacija.Adresa.PostanskiBroj = 21000;
-                    Global.Vozaci.Add(v.KorisnickoIme, v);
+                    //Global.Vozaci.Add(v.KorisnickoIme, v);
+                    Global.DodajVozaca(v);
                 }
                 else
                 {
@@ -59,7 +60,8 @@ namespace TaxiSluzba.Controllers
                     m.KontaktTelefon = k.KontaktTelefon;
                     m.Email = k.Email;
                     m.Uloga = k.Uloga;
-                    Global.Musterije.Add(m.KorisnickoIme, m);
+                    //Global.Musterije.Add(m.KorisnickoIme, m);
+                    Global.DodajMusteriju(m);
                 }
                 Global.Korisnici.Add(k.KorisnickoIme, k);
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], Formatting.Indented)));
@@ -75,28 +77,18 @@ namespace TaxiSluzba.Controllers
             IHttpActionResult response;
             Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
 
+            Global.IzmeniKorisnika(k);
+
             if (Global.Dispeceri.Keys.Contains(k.KorisnickoIme))
             {
-                Global.Dispeceri[k.KorisnickoIme].Lozinka = k.Lozinka;
-                Global.Dispeceri[k.KorisnickoIme].Ime = k.Ime;
-                Global.Dispeceri[k.KorisnickoIme].Prezime = k.Prezime;
-                Global.Dispeceri[k.KorisnickoIme].Pol = k.Pol;
-                Global.Dispeceri[k.KorisnickoIme].Jmbg = k.Jmbg;
-                Global.Dispeceri[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
-                Global.Dispeceri[k.KorisnickoIme].Email = k.Email;
-
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[k.KorisnickoIme], Formatting.Indented)));
             }
-            else if (Global.Korisnici.Keys.Contains(k.KorisnickoIme))
+            else if (Global.Vozaci.Keys.Contains(k.KorisnickoIme))
             {
-                Global.Korisnici[k.KorisnickoIme].Lozinka = k.Lozinka;
-                Global.Korisnici[k.KorisnickoIme].Ime = k.Ime;
-                Global.Korisnici[k.KorisnickoIme].Prezime = k.Prezime;
-                Global.Korisnici[k.KorisnickoIme].Pol = k.Pol;
-                Global.Korisnici[k.KorisnickoIme].Jmbg = k.Jmbg;
-                Global.Korisnici[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
-                Global.Korisnici[k.KorisnickoIme].Email = k.Email;
-
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Vozaci[k.KorisnickoIme], Formatting.Indented)));
+            }
+            else if (Global.Musterije.Keys.Contains(k.KorisnickoIme))
+            {
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], Formatting.Indented)));
             }
             else

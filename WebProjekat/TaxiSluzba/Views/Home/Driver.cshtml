@@ -246,6 +246,7 @@
             })
         });
         addMarker(19.8426221, 45.24239);
+        reverseGeocode([19.8426221, 45.24239])
 
         function reverseGeocode(coords) {
             fetch('http://nominatim.openstreetmap.org/reverse?format=json&lon=' + coords[0] + '&lat=' + coords[1])
@@ -274,7 +275,6 @@
             if (features != null && features.length > 0) {
                 for (x in features) {
                     var properties = features[x].getProperties();
-                    console.log(properties);
                     var id = properties.id;
                     markerSource.removeFeature(features[x]);
                 }
@@ -317,7 +317,7 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#voznje").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#voznje").append('<option>' + array[i] + '</option>');
                         }
                         console.log(array);
                     }
@@ -337,8 +337,8 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#dodeljeneVoznjeOk").append('<option>' + array[i].VremePorudzbine + '</option>');
-                            $("#dodeljeneVoznjeCancel").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#dodeljeneVoznjeOk").append('<option>' + array[i] + '</option>');
+                            $("#dodeljeneVoznjeCancel").append('<option>' + array[i] + '</option>');
                         }
                         console.log(array);
                     }
@@ -357,7 +357,7 @@
                     var array = JSON.parse(data);
                     if (array != null) {
                         for (var i in array) {
-                            $("#nedodeljeneVoznje").append('<option>' + array[i].VremePorudzbine + '</option>');
+                            $("#nedodeljeneVoznje").append('<option>' + array[i] + '</option>');
                         }
                         console.log(array);
                     }

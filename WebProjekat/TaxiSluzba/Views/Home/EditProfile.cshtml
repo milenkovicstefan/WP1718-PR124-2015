@@ -138,12 +138,12 @@
                     success: function (data) {
                         var object = JSON.parse(data);
                         alert('Izmene sačuvane');
+                        history.back(1);
                     },
                     error: function (response) {
                         alert(response.responseText);
                     }
                 });
-                history.back(1);
             })
         });
     </script>

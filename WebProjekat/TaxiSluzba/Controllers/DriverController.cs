@@ -20,12 +20,12 @@ namespace TaxiSluzba.Controllers
             IHttpActionResult response;
 
             Korisnik vozac = (Korisnik)HttpContext.Current.Session["korisnik"];
-            List<Voznja> voznje = new List<Voznja>();
+            List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
                 if (voznja.Vozac.KorisnickoIme == vozac.KorisnickoIme)
-                    voznje.Add(voznja);
+                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
@@ -42,12 +42,12 @@ namespace TaxiSluzba.Controllers
         {
             IHttpActionResult response;
 
-            List<Voznja> voznje = new List<Voznja>();
+            List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
                 if (voznja.StatusVoznje == Status.KREIRANA_NA_CEKANJU)
-                    voznje.Add(voznja);
+                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, Formatting.Indented)));

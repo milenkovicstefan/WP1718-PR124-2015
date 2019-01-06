@@ -156,7 +156,8 @@ namespace TaxiSluzba.Controllers
             v.Vozac = Global.Vozaci[vozacKorisnicko];
             v.StatusVoznje = Status.FORMIRANA;
             v.VremePorudzbine = DateTime.Now;
-            Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
+            //Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
+            Global.DodajVoznju(v);
             Global.Vozaci[vozacKorisnicko].Voznje.Add(v);
             Global.Korisnici[vozacKorisnicko].Voznje.Add(v);
             Global.Dispeceri[dispecer.KorisnickoIme].Voznje.Add(v);

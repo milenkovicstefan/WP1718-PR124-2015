@@ -81,6 +81,7 @@ namespace TaxiSluzba
                     {
                         Vozac vozac = JsonConvert.DeserializeObject<Vozac>(s);
                         Global.Vozaci.Add(vozac.KorisnickoIme, vozac);
+                        Global.Korisnici.Add(vozac.KorisnickoIme, (Korisnik)vozac);
                         s = "";
                     }
                 }
@@ -102,6 +103,7 @@ namespace TaxiSluzba
                     {
                         Musterija musterija = JsonConvert.DeserializeObject<Musterija>(s);
                         Global.Musterije.Add(musterija.KorisnickoIme, musterija);
+                        Global.Korisnici.Add(musterija.KorisnickoIme, (Korisnik)musterija);
                         s = "";
                     }
                 }
@@ -128,7 +130,6 @@ namespace TaxiSluzba
                 }
             }
         }
-
 
     }
 }

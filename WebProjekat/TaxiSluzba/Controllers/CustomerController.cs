@@ -20,12 +20,12 @@ namespace TaxiSluzba.Controllers
             IHttpActionResult response;
 
             Korisnik musterija = (Korisnik)HttpContext.Current.Session["korisnik"];
-            List<Voznja> voznje = new List<Voznja>();
+            List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
                 if (voznja.Musterija.KorisnickoIme == musterija.KorisnickoIme)
-                    voznje.Add(voznja);
+                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
@@ -51,12 +51,12 @@ namespace TaxiSluzba.Controllers
                     voznje.Add(voznja);
             }
 
-            List<Voznja> aktivneVoznje = new List<Voznja>();
+            List<string> aktivneVoznje = new List<string>();
 
             foreach (var voznja in voznje)
             {
                 if (voznja.StatusVoznje == Status.KREIRANA_NA_CEKANJU)
-                    aktivneVoznje.Add(voznja);
+                    aktivneVoznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(aktivneVoznje, new JsonSerializerSettings()
@@ -113,7 +113,8 @@ namespace TaxiSluzba.Controllers
                 v.ZeljeniTipVozila = TipVozila.KOMBI;
             v.StatusVoznje = Status.KREIRANA_NA_CEKANJU;
             v.VremePorudzbine = DateTime.Now;
-            Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
+            //Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
+            Global.DodajVoznju(v);
             Global.Musterije[musterija.KorisnickoIme].Voznje.Add(v);
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings()

@@ -1,0 +1,1 @@
+{"KorisnickoIme":"musterija","Lozinka":"123123","Ime":"Stefan","Prezime":"Milenkovic","Pol":0,"KontaktTelefon":"0677019297","Email":"stefan.m@uns.ac.rs","Uloga":2,"Voznje":[],"Jmbg":"2204996762035"}

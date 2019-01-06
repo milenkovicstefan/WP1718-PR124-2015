@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -95,6 +96,117 @@ namespace TaxiSluzba.App_Code
             {
                 voznje = value;
             }
+        }
+
+        public static void DodajVozaca(Vozac vozac)
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Vozaci.txt");
+
+            using (var sw = new StreamWriter(path, append:true))
+            {
+                var jsonObj = JsonConvert.SerializeObject(vozac);
+                sw.WriteLine(jsonObj);
+            }
+
+            Vozaci.Add(vozac.KorisnickoIme, vozac);
+        }
+
+        public static void DodajMusteriju(Musterija musterija)
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Musterije.txt");
+
+            using (var sw = new StreamWriter(path, append: true))
+            {
+                var jsonObj = JsonConvert.SerializeObject(musterija);
+                sw.WriteLine(jsonObj);
+            }
+
+            Musterije.Add(musterija.KorisnickoIme, musterija);
+        }
+
+        public static void DodajVoznju(Voznja voznja)
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Voznje.txt");
+
+            using (var sw = new StreamWriter(path, append: true))
+            {
+                var jsonObj = JsonConvert.SerializeObject(voznja);
+                sw.WriteLine(jsonObj);
+            }
+
+            Voznje.Add(voznja.VremePorudzbine.Ticks.ToString(), voznja);
+        }
+
+        public static void IzmeniKorisnika(Korisnik k)
+        {
+            string line_to_delete = String.Empty;
+            string line_to_insert = String.Empty;
+
+            if (Dispeceri.Keys.Contains(k.KorisnickoIme))
+            {
+                k.Uloga = Uloga.DISPECER;
+                line_to_delete = JsonConvert.SerializeObject(Dispeceri[k.KorisnickoIme]);
+                Dispeceri[k.KorisnickoIme].Lozinka = k.Lozinka;
+                Dispeceri[k.KorisnickoIme].Ime = k.Ime;
+                Dispeceri[k.KorisnickoIme].Prezime = k.Prezime;
+                Dispeceri[k.KorisnickoIme].Pol = k.Pol;
+                Dispeceri[k.KorisnickoIme].Jmbg = k.Jmbg;
+                Dispeceri[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
+                Dispeceri[k.KorisnickoIme].Email = k.Email;
+                line_to_insert = JsonConvert.SerializeObject(Dispeceri[k.KorisnickoIme]);
+            }
+            else if (Vozaci.Keys.Contains(k.KorisnickoIme))
+            {
+                k.Uloga = Uloga.VOZAC;
+                line_to_delete = JsonConvert.SerializeObject(Vozaci[k.KorisnickoIme]);
+                Vozaci[k.KorisnickoIme].Lozinka = k.Lozinka;
+                Vozaci[k.KorisnickoIme].Ime = k.Ime;
+                Vozaci[k.KorisnickoIme].Prezime = k.Prezime;
+                Vozaci[k.KorisnickoIme].Pol = k.Pol;
+                Vozaci[k.KorisnickoIme].Jmbg = k.Jmbg;
+                Vozaci[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
+                Vozaci[k.KorisnickoIme].Email = k.Email;
+                Korisnici[k.KorisnickoIme] = (Korisnik)Vozaci[k.KorisnickoIme];
+                line_to_insert = JsonConvert.SerializeObject(Vozaci[k.KorisnickoIme]);
+            }
+            else if (Musterije.Keys.Contains(k.KorisnickoIme))
+            {
+                k.Uloga = Uloga.MUSTERIJA;
+                line_to_delete = JsonConvert.SerializeObject(Musterije[k.KorisnickoIme]);
+                Musterije[k.KorisnickoIme].Lozinka = k.Lozinka;
+                Musterije[k.KorisnickoIme].Ime = k.Ime;
+                Musterije[k.KorisnickoIme].Prezime = k.Prezime;
+                Musterije[k.KorisnickoIme].Pol = k.Pol;
+                Musterije[k.KorisnickoIme].Jmbg = k.Jmbg;
+                Musterije[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
+                Musterije[k.KorisnickoIme].Email = k.Email;
+                Korisnici[k.KorisnickoIme] = (Korisnik)Musterije[k.KorisnickoIme];
+                line_to_insert = JsonConvert.SerializeObject(Musterije[k.KorisnickoIme]);
+            }
+
+            string path = "noPath";
+            if (k.Uloga == Uloga.DISPECER)
+            {
+                path = HttpContext.Current.Server.MapPath("~/App_Data/Dispeceri.txt");
+            }
+            else if (k.Uloga == Uloga.VOZAC)
+            {
+                path = HttpContext.Current.Server.MapPath("~/App_Data/Vozaci.txt");
+            }
+            else if (k.Uloga == Uloga.MUSTERIJA)
+            {
+                path = HttpContext.Current.Server.MapPath("~/App_Data/Musterije.txt");
+            }
+
+            if (File.Exists(path))
+            {
+                var txtLines = File.ReadAllLines(path).ToList();
+                int index = txtLines.IndexOf(line_to_delete);
+                txtLines.RemoveAt(index);
+                txtLines.Insert(index, line_to_insert);
+                File.WriteAllLines(path, txtLines);
+            }
+
         }
     }
 }
