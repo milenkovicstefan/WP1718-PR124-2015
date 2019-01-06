@@ -1,0 +1,137 @@
+﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="ulogovan">
+        <div id="LogovanjeDiv" class="header">
+            <form id="LogovanjeForm">
+                <font size="4">
+                    <font size="7">
+                        <font color="yellow"><b>TAXI</b></font>SLUŽBA
+                    </font>
+                </font>
+                <table align="right">
+                    <tr>
+                        <td colspan="8">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td><input id="submitLogout" type="button" name="submitLogout" value="Izlogujte se" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="ContentDiv" class="row">
+            <table align="center">
+                <tr><td colspan="3"></td></tr>
+                <tr>
+                    <td colspan="3" rowspan="3" align="center" valign="middle">Profil:</td>
+                </tr>
+                <tr><td colspan="3"></td></tr>
+                <tr><td colspan="3"></td></tr>
+                <tr>
+                    <td>Vreme porudžbine: </td>
+                    <td colspan="2" width="300"><input size="43" id="vreme" type="text" name="vreme" disabled></td>
+                </tr>
+                <tr>
+                    <td>Početna lokacija: </td>
+                    <td colspan="2" width="300"><input size="43" id="lokacija" type="text" name="lokacija" disabled></td>
+                </tr>
+                <tr>
+                    <td>Tip vozila: </td>
+                    <td colspan="2" width="300"><input size="43" id="tipVozila" type="text" name="tipVozila" disabled></td>
+                </tr>
+                <tr>
+                    <td>Mušterija: </td>
+                    <td colspan="2" width="300"><input size="43" id="musterija" type="text" name="musterija" disabled></td>
+                </tr>
+                <tr>
+                    <td>Odredište: </td>
+                    <td colspan="2" width="300"><input size="43" id="odrediste" type="text" name="odrediste" disabled></td>
+                </tr>
+                <tr>
+                    <td>Dispečer: </td>
+                    <td colspan="2" width="300"><input size="43" id="dispecer" type="text" name="dispecer" disabled></td>
+                </tr>
+                <tr>
+                    <td>Vozač: </td>
+                    <td colspan="2" width="300"><input size="43" id="vozac" type="text" name="vozac" disabled></td>
+                </tr>
+                <tr>
+                    <td>Iznos: </td>
+                    <td colspan="2" width="300"><input size="43" id="iznos" type="text" name="iznos" disabled></td>
+                </tr>
+                <tr>
+                    <td>Komentari: </td>
+                    <td colspan="2" width="300"><input size="43" id="komentari" type="text" name="komentari" disabled></td>
+                </tr>
+                <tr>
+                    <td>Status vožnje: </td>
+                    <td colspan="2" width="300"><input size="43" id="status" type="text" name="status" disabled></td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="right"><input id="submitCancel" type="button" name="submitCancel" value="Nazad"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/api/Ride',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    console.log(object);
+                    if (object != null) {
+                        if (object.VremePorudzbine != null)
+                            $('#vreme').val(object.VremePorudzbine);
+                        if (object.PocetnaLokacija != null)
+                            $('#lokacija').val(object.PocetnaLokacija.Adresa.Ulica + ' ' + object.PocetnaLokacija.Adresa.Broj + ', ' + object.PocetnaLokacija.Adresa.Mesto + ' ' + object.PocetnaLokacija.Adresa.PostanskiBroj);
+                        if (object.ZeljeniTipVozila != null)
+                            $('#tipVozila').val(object.ZeljeniTipVozila);
+                        if (object.Musterija != null)
+                            $('#musterija').val(object.Musterija.KorisnickoIme);
+                        if (object.Odrediste != null)
+                            $('#odrediste').val(object.Odrediste.Adresa.Ulica + ' ' + object.Odrediste.Adresa.Broj + ', ' + object.Odrediste.Adresa.Mesto + ' ' + object.Odrediste.Adresa.PostanskiBroj);
+                        if (object.Dispecer != null)
+                            $('#dispecer').val(object.Dispecer.KorisnickoIme);
+                        if (object.Vozac != null)
+                            $('#vozac').val(object.Vozac.KorisnickoIme);
+                        if (object.Iznos != null)
+                            $('#iznos').val(object.Iznos);
+                        if (object.Komentari != null)
+                            $('#komentari').val(object.Komentari);
+                        if (object.StatusVoznje != null)
+                            $('#status').val(JSON.stringify(object.StatusVoznje));
+                    }
+                },
+            });
+
+            $('#submitLogout').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Logout',
+                    data: '',
+                    success: function (data) {
+                        window.location.href = '/Home/Index';
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+                $('input[type="text"]').val('');
+                window.location.href = '/Home/Index';
+            });
+
+            $('#submitCancel').on('click', function () {
+                history.back(1);
+            });
+        });
+    </script>
+</body>

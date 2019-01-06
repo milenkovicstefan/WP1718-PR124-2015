@@ -40,5 +40,10 @@ namespace TaxiSluzba.Controllers
         {
             return View();
         }
+
+        public ActionResult RideInfo()
+        {
+            return View();
+        }
     }
 }

@@ -113,7 +113,7 @@ namespace TaxiSluzba.Controllers
                 v.ZeljeniTipVozila = TipVozila.KOMBI;
             v.StatusVoznje = Status.KREIRANA_NA_CEKANJU;
             v.VremePorudzbine = DateTime.Now;
-            Global.Voznje.Add(v.VremePorudzbine.ToString(), v);
+            Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
             Global.Musterije[musterija.KorisnickoIme].Voznje.Add(v);
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings()

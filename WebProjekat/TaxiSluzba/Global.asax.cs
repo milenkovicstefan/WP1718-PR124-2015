@@ -122,7 +122,7 @@ namespace TaxiSluzba
                     if (nextLine.Contains("}"))
                     {
                         Voznja voznja = JsonConvert.DeserializeObject<Voznja>(s);
-                        Global.Voznje.Add(voznja.VremePorudzbine.ToString(), voznja);
+                        Global.Voznje.Add(voznja.VremePorudzbine.Ticks.ToString(), voznja);
                         s = "";
                     }
                 }

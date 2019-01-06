@@ -91,43 +91,17 @@ namespace TaxiSluzba.Controllers
         {
             IHttpActionResult response;
             var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
-            double koordinataX;
-            Double.TryParse(data["KoordinataX"].ToString(), out koordinataX);
-            double koordinataY;
-            Double.TryParse(data["KoordinataY"].ToString(), out koordinataY);
-            string adresa = data["Adresa"].ToString();
             double iznos;
+            string vremeVoznje;
             Double.TryParse(data["Iznos"].ToString(), out iznos);
-            string vremeVoznje = data["VremeVoznje"].ToString();
-            string[] adresaDelovi = adresa.Split(',');
-            string[] ulicaBroj = adresaDelovi[0].Split(' ');
-            int broj = Int32.Parse(ulicaBroj.Last());
-            string ulica = "";
-            for (int i = 0; i < ulicaBroj.Length - 1; i++)
-                ulica += ulicaBroj[i] + " ";
-            ulica = ulica.Trim();
-            string[] mestoPostanski = adresaDelovi[1].Split(' ');
-            int postanski = Int32.Parse(mestoPostanski.Last());
-            string mesto = "";
-            for (int i = 0; i < mestoPostanski.Length - 1; i++)
-                mesto += mestoPostanski[i] + " ";
-            mesto = mesto.Trim();
-
-            Adresa a = new Adresa();
-            a.Broj = broj;
-            a.Mesto = mesto;
-            a.PostanskiBroj = postanski;
-            a.Ulica = ulica;
-            Lokacija l = new Lokacija();
-            l.Adresa = a;
-            l.KoordinataX = koordinataX;
-            l.KoordinataY = koordinataY;
+            vremeVoznje = data["VremeVoznje"].ToString();
+            Lokacija l = GetLocation(data);
 
             Global.Voznje[vremeVoznje].Iznos = iznos;
             Global.Voznje[vremeVoznje].Odrediste = l;
             Global.Voznje[vremeVoznje].StatusVoznje = Status.USPESNA;
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", Formatting.Indented)));
-            
+
             return response;
         }
 
@@ -154,6 +128,41 @@ namespace TaxiSluzba.Controllers
             })));
 
             return response;
+        }
+
+        private Lokacija GetLocation(JObject data)
+        {
+            double koordinataX;
+            Double.TryParse(data["KoordinataX"].ToString(), out koordinataX);
+            double koordinataY;
+            Double.TryParse(data["KoordinataY"].ToString(), out koordinataY);
+            string adresa = data["Adresa"].ToString();
+            string[] adresaDelovi = adresa.Split(',');
+            string[] ulicaBroj = adresaDelovi[0].Split(' ');
+            int broj = Int32.Parse(ulicaBroj.Last());
+            string ulica = "";
+            for (int i = 0; i < ulicaBroj.Length - 1; i++)
+                ulica += ulicaBroj[i] + " ";
+            ulica = ulica.Trim();
+            string[] mestoPostanski = adresaDelovi[1].Split(' ');
+            int postanski = Int32.Parse(mestoPostanski.Last());
+            string mesto = "";
+            for (int i = 0; i < mestoPostanski.Length - 1; i++)
+                mesto += mestoPostanski[i] + " ";
+            mesto = mesto.Trim();
+
+            Adresa a = new Adresa();
+            a.Broj = broj;
+            a.Mesto = mesto;
+            a.PostanskiBroj = postanski;
+            a.Ulica = ulica;
+
+            Lokacija l = new Lokacija();
+            l.Adresa = a;
+            l.KoordinataX = koordinataX;
+            l.KoordinataY = koordinataY;
+
+            return l;
         }
 
     }

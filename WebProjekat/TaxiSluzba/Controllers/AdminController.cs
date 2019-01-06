@@ -55,13 +55,13 @@ namespace TaxiSluzba.Controllers
             IHttpActionResult response;
 
             Korisnik admin = (Korisnik)HttpContext.Current.Session["korisnik"];
-            List<Voznja> voznje = new List<Voznja>();
+            List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
                 if (voznja.Dispecer != null)
                 if (voznja.Dispecer.KorisnickoIme == admin.KorisnickoIme)
-                    voznje.Add(voznja);
+                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
@@ -79,12 +79,12 @@ namespace TaxiSluzba.Controllers
             IHttpActionResult response;
 
             Korisnik admin = (Korisnik)HttpContext.Current.Session["korisnik"];
-            List<Voznja> voznje = new List<Voznja>();
+            List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
                 if (voznja.StatusVoznje == Status.KREIRANA_NA_CEKANJU)
-                    voznje.Add(voznja);
+                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
@@ -101,9 +101,9 @@ namespace TaxiSluzba.Controllers
         {
             IHttpActionResult response;
 
-            List<Voznja> voznje = new List<Voznja>();
+            List<string> voznje = new List<string>();
 
-            foreach (var voznja in Global.Voznje.Values)
+            foreach (var voznja in Global.Voznje.Keys)
             {
                 voznje.Add(voznja);
             }
@@ -136,42 +136,18 @@ namespace TaxiSluzba.Controllers
         public IHttpActionResult CreateRide(HttpRequestMessage value)
         {
             IHttpActionResult response;
-            //Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
             var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
             double koordinataX;
             Double.TryParse(data["KoordinataX"].ToString(), out koordinataX);
             double koordinataY;
             Double.TryParse(data["KoordinataY"].ToString(), out koordinataY);
-            string adresa = data["Adresa"].ToString();
             string vozacKorisnicko = data["Vozac"].ToString();
             string tip = data["TipAutomobila"].ToString();
-
-            string[] adresaDelovi = adresa.Split(',');
-            string[] ulicaBroj = adresaDelovi[0].Split(' ');
-            int broj = Int32.Parse(ulicaBroj.Last());
-            string ulica = "";
-            for (int i = 0; i < ulicaBroj.Length - 1; i++)
-                ulica += ulicaBroj[i] + " ";
-            ulica = ulica.Trim();
-            string[] mestoPostanski = adresaDelovi[1].Split(' ');
-            int postanski = Int32.Parse(mestoPostanski.Last());
-            string mesto = "";
-            for (int i = 0; i < mestoPostanski.Length - 1; i++)
-                mesto += mestoPostanski[i] + " ";
-            mesto = mesto.Trim();
 
             Voznja v = new Voznja();
             Korisnik dispecer = (Korisnik)HttpContext.Current.Session["korisnik"];
             v.Dispecer = Global.Dispeceri[dispecer.KorisnickoIme];
-            Adresa a = new Adresa();
-            a.Broj = broj;
-            a.Mesto = mesto;
-            a.PostanskiBroj = postanski;
-            a.Ulica = ulica;
-            Lokacija l = new Lokacija();
-            l.Adresa = a;
-            l.KoordinataX = koordinataX;
-            l.KoordinataY = koordinataY;
+            Lokacija l = GetLocation(data);
             v.PocetnaLokacija = l;
             if (tip.Equals("Putničko"))
                 v.ZeljeniTipVozila = TipVozila.PUTNICKO;
@@ -180,7 +156,7 @@ namespace TaxiSluzba.Controllers
             v.Vozac = Global.Vozaci[vozacKorisnicko];
             v.StatusVoznje = Status.FORMIRANA;
             v.VremePorudzbine = DateTime.Now;
-            Global.Voznje.Add(v.VremePorudzbine.ToString(), v);
+            Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
             Global.Vozaci[vozacKorisnicko].Voznje.Add(v);
             Global.Korisnici[vozacKorisnicko].Voznje.Add(v);
             Global.Dispeceri[dispecer.KorisnickoIme].Voznje.Add(v);
@@ -211,11 +187,7 @@ namespace TaxiSluzba.Controllers
 
             return response;
         }
-        public class test
-        {
-            public double lat;
-            public double lon;
-        }
+
         [HttpPut, Route("api/Admin/GetClosestFreeDrivers")]
         public IHttpActionResult GetClosestFreeDrivers(HttpRequestMessage value)
         {
@@ -255,6 +227,41 @@ namespace TaxiSluzba.Controllers
             })));
 
             return response;
+        }
+
+        private Lokacija GetLocation(JObject data)
+        {
+            double koordinataX;
+            Double.TryParse(data["KoordinataX"].ToString(), out koordinataX);
+            double koordinataY;
+            Double.TryParse(data["KoordinataY"].ToString(), out koordinataY);
+            string adresa = data["Adresa"].ToString();
+            string[] adresaDelovi = adresa.Split(',');
+            string[] ulicaBroj = adresaDelovi[0].Split(' ');
+            int broj = Int32.Parse(ulicaBroj.Last());
+            string ulica = "";
+            for (int i = 0; i < ulicaBroj.Length - 1; i++)
+                ulica += ulicaBroj[i] + " ";
+            ulica = ulica.Trim();
+            string[] mestoPostanski = adresaDelovi[1].Split(' ');
+            int postanski = Int32.Parse(mestoPostanski.Last());
+            string mesto = "";
+            for (int i = 0; i < mestoPostanski.Length - 1; i++)
+                mesto += mestoPostanski[i] + " ";
+            mesto = mesto.Trim();
+
+            Adresa a = new Adresa();
+            a.Broj = broj;
+            a.Mesto = mesto;
+            a.PostanskiBroj = postanski;
+            a.Ulica = ulica;
+
+            Lokacija l = new Lokacija();
+            l.Adresa = a;
+            l.KoordinataX = koordinataX;
+            l.KoordinataY = koordinataY;
+
+            return l;
         }
     }
 }

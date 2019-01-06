@@ -233,8 +233,8 @@ C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\Sys
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\System.Web.WebPages.Deployment.xml
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\System.Web.WebPages.Razor.xml
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\bin\Antlr3.Runtime.pdb
-C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.csprojAssemblyReference.cache
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.csproj.CoreCompileInputs.cache
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.csproj.CopyComplete
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.dll
 C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.pdb
+C:\Users\stefa\OneDrive\Desktop\WP1718-PR124-2015\WebProjekat\TaxiSluzba\obj\Debug\TaxiSluzba.csprojAssemblyReference.cache

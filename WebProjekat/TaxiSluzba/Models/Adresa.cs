@@ -65,5 +65,10 @@ namespace TaxiSluzba.Models
             }
         }
         #endregion
+
+        public override string ToString()
+        {
+            return String.Format("{0} {1}, {2} {3}", this.Ulica, this.Broj, this.Mesto, this.PostanskiBroj); 
+        }
     }
 }
