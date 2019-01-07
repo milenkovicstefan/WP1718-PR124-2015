@@ -78,6 +78,7 @@ namespace TaxiSluzba.Controllers
                 if (Global.Dispeceri.Keys.Contains(korisnicko))
                 {
                     Global.Dispeceri[korisnicko] = (Dispecer)temp;
+                    Global.RewriteAllTxt();
                     response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], new JsonSerializerSettings()
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -89,6 +90,7 @@ namespace TaxiSluzba.Controllers
                 {
                     Global.Vozaci[korisnicko] = (Vozac)temp;
                     Global.Korisnici[korisnicko] = temp;
+                    Global.RewriteAllTxt();
                     response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], new JsonSerializerSettings()
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -99,6 +101,7 @@ namespace TaxiSluzba.Controllers
                 {
                     Global.Musterije[korisnicko] = (Musterija)temp;
                     Global.Korisnici[korisnicko] = temp;
+                    Global.RewriteAllTxt();
                     response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], new JsonSerializerSettings()
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -127,6 +130,7 @@ namespace TaxiSluzba.Controllers
             else if (Global.Dispeceri.Keys.Contains(korisnicko))
             { 
                 Global.Dispeceri.Remove(korisnicko);
+                Global.RewriteAllTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Korisnik " + korisnicko + " obrisan.", new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -136,6 +140,7 @@ namespace TaxiSluzba.Controllers
             else
             {
                 Global.Korisnici.Remove(korisnicko);
+                Global.RewriteAllTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Korisnik " + korisnicko + " obrisan.", new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,

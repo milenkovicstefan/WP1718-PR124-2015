@@ -145,7 +145,8 @@ namespace TaxiSluzba.Controllers
                 })));
             else
             {
-                Global.BlokirajKorisnika(k);
+                Global.Blokirani.Add(k.KorisnickoIme, k);
+                Global.RewriteBanovaniTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Blokirani[k.KorisnickoIme], new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -182,11 +183,11 @@ namespace TaxiSluzba.Controllers
             v.Vozac = Global.Vozaci[vozacKorisnicko];
             v.StatusVoznje = Status.FORMIRANA;
             v.VremePorudzbine = DateTime.Now;
-            //Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
-            Global.DodajVoznju(v);
+            Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
             Global.Vozaci[vozacKorisnicko].Voznje.Add(v);
             Global.Korisnici[vozacKorisnicko].Voznje.Add(v);
             Global.Dispeceri[dispecer.KorisnickoIme].Voznje.Add(v);
+            Global.RewriteAllTxt();
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings()
             {
@@ -212,7 +213,8 @@ namespace TaxiSluzba.Controllers
                 })));
             else
             {
-                Global.OdblokirajKorisnika(k);
+                Global.Blokirani.Remove(k.KorisnickoIme);
+                Global.RewriteBanovaniTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(k.KorisnickoIme, new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,

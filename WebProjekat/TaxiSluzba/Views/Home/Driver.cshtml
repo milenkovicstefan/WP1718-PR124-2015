@@ -247,7 +247,7 @@
         });
         addMarker(19.8426221, 45.24239);
         reverseGeocode([19.8426221, 45.24239])
-
+        var address;
         function reverseGeocode(coords) {
             fetch('http://nominatim.openstreetmap.org/reverse?format=json&lon=' + coords[0] + '&lat=' + coords[1])
                 .then(function (response) {
@@ -256,7 +256,31 @@
                     $("#latitude").val(json.lat);
                     $("#longitude").val(json.lon);
                     $('#address').val(json.address.road + " " + json.address.house_number + ", " + json.address.city + " " + json.address.postcode);
+                    address = json.address;
                 });
+
+            var data = {
+                KoordinataX: $('#latitude').val(),
+                KoordinataY: $('#longitude').val(),
+                Adresa: {
+                    Ulica: address.road,
+                    Broj: address.house_number,
+                    Mesto: address.city,
+                    PostanskiBroj: address.postcode
+                }
+            };
+
+            var JSONObj = JSON.stringify(data);
+
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Driver/UpdateLocation',
+                data: JSONObj,
+                success: function (data) {
+                        console.log(data);
+                    }
+                },
+            });
         }
 
 

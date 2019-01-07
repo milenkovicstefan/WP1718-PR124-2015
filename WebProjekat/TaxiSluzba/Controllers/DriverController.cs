@@ -37,6 +37,26 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
+        [HttpPut, Route("api/Driver/UpdateLocation")]
+        public IHttpActionResult UpdateLocation(HttpRequestMessage value)
+        {
+            IHttpActionResult response;
+
+            Lokacija location = JsonConvert.DeserializeObject<Lokacija>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
+
+            Korisnik vozac = (Korisnik)HttpContext.Current.Session["korisnik"];
+
+            Global.Vozaci[vozac.KorisnickoIme].Lokacija = location;
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(location, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
         [HttpGet, Route("api/Driver/GetUnassignedRides")]
         public IHttpActionResult GetUnassignedRides()
         {
@@ -104,6 +124,7 @@ namespace TaxiSluzba.Controllers
             Global.Voznje[vremeVoznje].Iznos = iznos;
             Global.Voznje[vremeVoznje].Odrediste = l;
             Global.Voznje[vremeVoznje].StatusVoznje = Status.USPESNA;
+            Global.RewriteAllTxt();
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -128,6 +149,7 @@ namespace TaxiSluzba.Controllers
 
             Global.Voznje[vremeVoznje].StatusVoznje = Status.NEUSPESNA;
             Global.Voznje[vremeVoznje].Komentari.Add(k);
+            Global.RewriteAllTxt();
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,

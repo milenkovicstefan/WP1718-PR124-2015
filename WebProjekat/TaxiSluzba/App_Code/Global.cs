@@ -112,194 +112,115 @@ namespace TaxiSluzba.App_Code
             }
         }
 
-        public static void DodajVozaca(Vozac vozac)
-        {
-            string path = HttpContext.Current.Server.MapPath("~/App_Data/Vozaci.txt");
-
-            using (var sw = new StreamWriter(path, append:true))
-            {
-                var jsonObj = JsonConvert.SerializeObject(vozac, new JsonSerializerSettings()
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                    Formatting = Formatting.Indented
-                }); ;
-                sw.WriteLine(jsonObj);
-            }
-
-            //Vozaci.Add(vozac.KorisnickoIme, vozac);
-        }
-
-        public static void DodajMusteriju(Musterija musterija)
-        {
-            string path = HttpContext.Current.Server.MapPath("~/App_Data/Musterije.txt");
-
-            using (var sw = new StreamWriter(path, append: true))
-            {
-                var jsonObj = JsonConvert.SerializeObject(musterija, new JsonSerializerSettings()
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                    Formatting = Formatting.Indented
-                }); ;
-                sw.WriteLine(jsonObj);
-            }
-
-            Musterije.Add(musterija.KorisnickoIme, musterija);
-        }
-
-        public static void DodajVoznju(Voznja voznja)
-        {
-            string path = HttpContext.Current.Server.MapPath("~/App_Data/Voznje.txt");
-
-            using (var sw = new StreamWriter(path, append: true))
-            {
-                var jsonObj = JsonConvert.SerializeObject(voznja, new JsonSerializerSettings()
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                    Formatting = Formatting.Indented
-                });
-                sw.WriteLine(jsonObj);
-            }
-
-            Voznje.Add(voznja.VremePorudzbine.Ticks.ToString(), voznja);
-        }
-
-        public static void DodajAutomobil(Automobil automobil)
+        public static void RewriteAutomobiliTxt()
         {
             string path = HttpContext.Current.Server.MapPath("~/App_Data/Automobili.txt");
-
-            using (var sw = new StreamWriter(path, append: true))
+            List<string> objects = new List<string>();
+            foreach (var item in Automobili.Values)
             {
-                var jsonObj = JsonConvert.SerializeObject(automobil, new JsonSerializerSettings()
+                string obj = JsonConvert.SerializeObject(item, new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                     Formatting = Formatting.Indented
                 });
-                sw.WriteLine(jsonObj);
+                obj += "###";
+                objects.Add(obj);
             }
-
-            Automobili.Add(automobil.TaxiOznaka, automobil);
+            File.WriteAllLines(path, objects);
         }
 
-        public static void BlokirajKorisnika(Korisnik korisnik)
+        public static void RewriteBanovaniTxt()
         {
             string path = HttpContext.Current.Server.MapPath("~/App_Data/Banovani.txt");
-
-            using (var sw = new StreamWriter(path, append: true))
+            List<string> objects = new List<string>();
+            foreach (var item in Blokirani.Values)
             {
-                var jsonObj = JsonConvert.SerializeObject(korisnik, new JsonSerializerSettings()
+                string obj = JsonConvert.SerializeObject(item, new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                     Formatting = Formatting.Indented
                 });
-                sw.WriteLine(jsonObj);
+                obj += "###";
+                objects.Add(obj);
             }
-
-            Blokirani.Add(korisnik.KorisnickoIme, Korisnici[korisnik.KorisnickoIme]);
+            File.WriteAllLines(path, objects);
         }
 
-        public static void OdblokirajKorisnika(Korisnik korisnik)
+        public static void RewriteDispeceriTxt()
         {
-            string path = HttpContext.Current.Server.MapPath("~/App_Data/Banovani.txt");
-
-            string line_to_delete = JsonConvert.SerializeObject(korisnik, new JsonSerializerSettings()
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Dispeceri.txt");
+            List<string> objects = new List<string>();
+            foreach (var item in Dispeceri.Values)
             {
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                Formatting = Formatting.Indented
-            });
-
-            if (File.Exists(path))
-            {
-                var txtLines = File.ReadAllLines(path).ToList();
-                int index = txtLines.IndexOf(line_to_delete);
-                txtLines.RemoveAt(index);
-                File.WriteAllLines(path, txtLines);
+                string obj = JsonConvert.SerializeObject(item, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
+                obj += "###";
+                objects.Add(obj);
             }
-
-            Blokirani.Remove(korisnik.KorisnickoIme);
+            File.WriteAllLines(path, objects);
         }
 
-        public static void IzmeniKorisnika(Korisnik k)
+        public static void RewriteMusterijeTxt()
         {
-            string line_to_delete = String.Empty;
-            string line_to_insert = String.Empty;
-
-            if (Dispeceri.Keys.Contains(k.KorisnickoIme))
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Musterije.txt");
+            List<string> objects = new List<string>();
+            foreach (var item in Musterije.Values)
             {
-                k.Uloga = Uloga.DISPECER;
-                line_to_delete = JsonConvert.SerializeObject(Dispeceri[k.KorisnickoIme]);
-                Dispeceri[k.KorisnickoIme].Lozinka = k.Lozinka;
-                Dispeceri[k.KorisnickoIme].Ime = k.Ime;
-                Dispeceri[k.KorisnickoIme].Prezime = k.Prezime;
-                Dispeceri[k.KorisnickoIme].Pol = k.Pol;
-                Dispeceri[k.KorisnickoIme].Jmbg = k.Jmbg;
-                Dispeceri[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
-                Dispeceri[k.KorisnickoIme].Email = k.Email;
-                line_to_insert = JsonConvert.SerializeObject(Dispeceri[k.KorisnickoIme], new JsonSerializerSettings()
+                string obj = JsonConvert.SerializeObject(item, new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                     Formatting = Formatting.Indented
                 });
+                obj += "###";
+                objects.Add(obj);
             }
-            else if (Vozaci.Keys.Contains(k.KorisnickoIme))
+            File.WriteAllLines(path, objects);
+        }
+
+        public static void RewriteVozaciTxt()
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Vozaci.txt");
+            List<string> objects = new List<string>();
+            foreach (var item in Vozaci.Values)
             {
-                k.Uloga = Uloga.VOZAC;
-                line_to_delete = JsonConvert.SerializeObject(Vozaci[k.KorisnickoIme]);
-                Vozaci[k.KorisnickoIme].Lozinka = k.Lozinka;
-                Vozaci[k.KorisnickoIme].Ime = k.Ime;
-                Vozaci[k.KorisnickoIme].Prezime = k.Prezime;
-                Vozaci[k.KorisnickoIme].Pol = k.Pol;
-                Vozaci[k.KorisnickoIme].Jmbg = k.Jmbg;
-                Vozaci[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
-                Vozaci[k.KorisnickoIme].Email = k.Email;
-                Korisnici[k.KorisnickoIme] = (Korisnik)Vozaci[k.KorisnickoIme];
-                line_to_insert = JsonConvert.SerializeObject(Vozaci[k.KorisnickoIme], new JsonSerializerSettings()
+                string obj = JsonConvert.SerializeObject(item, new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                     Formatting = Formatting.Indented
                 });
+                obj += "###";
+                objects.Add(obj);
             }
-            else if (Musterije.Keys.Contains(k.KorisnickoIme))
+            File.WriteAllLines(path, objects);
+        }
+
+        public static void RewriteVoznjeTxt()
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Voznje.txt");
+            List<string> objects = new List<string>();
+            foreach (var item in Voznje.Values)
             {
-                k.Uloga = Uloga.MUSTERIJA;
-                line_to_delete = JsonConvert.SerializeObject(Musterije[k.KorisnickoIme]);
-                Musterije[k.KorisnickoIme].Lozinka = k.Lozinka;
-                Musterije[k.KorisnickoIme].Ime = k.Ime;
-                Musterije[k.KorisnickoIme].Prezime = k.Prezime;
-                Musterije[k.KorisnickoIme].Pol = k.Pol;
-                Musterije[k.KorisnickoIme].Jmbg = k.Jmbg;
-                Musterije[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
-                Musterije[k.KorisnickoIme].Email = k.Email;
-                Korisnici[k.KorisnickoIme] = (Korisnik)Musterije[k.KorisnickoIme];
-                line_to_insert = JsonConvert.SerializeObject(Musterije[k.KorisnickoIme], new JsonSerializerSettings()
+                string obj = JsonConvert.SerializeObject(item, new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                     Formatting = Formatting.Indented
                 });
+                obj += "###";
+                objects.Add(obj);
             }
+            File.WriteAllLines(path, objects);
+        }
 
-            string path = "noPath";
-            if (k.Uloga == Uloga.DISPECER)
-            {
-                path = HttpContext.Current.Server.MapPath("~/App_Data/Dispeceri.txt");
-            }
-            else if (k.Uloga == Uloga.VOZAC)
-            {
-                path = HttpContext.Current.Server.MapPath("~/App_Data/Vozaci.txt");
-            }
-            else if (k.Uloga == Uloga.MUSTERIJA)
-            {
-                path = HttpContext.Current.Server.MapPath("~/App_Data/Musterije.txt");
-            }
-
-            if (File.Exists(path))
-            {
-                var txtLines = File.ReadAllLines(path).ToList();
-                int index = txtLines.IndexOf(line_to_delete);
-                txtLines.RemoveAt(index);
-                txtLines.Insert(index, line_to_insert);
-                File.WriteAllLines(path, txtLines);
-            }
-
+        public static void RewriteAllTxt()
+        {
+            RewriteDispeceriTxt();
+            RewriteMusterijeTxt();
+            RewriteVozaciTxt();
+            RewriteAutomobiliTxt();
+            RewriteVoznjeTxt();
         }
     }
 }

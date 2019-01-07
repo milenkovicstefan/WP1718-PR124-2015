@@ -1,0 +1,107 @@
+﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+<head>
+    <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="ulogovan">
+        <div id="LogovanjeDiv" class="header">
+            <form id="LogovanjeForm">
+                <font size="4">
+                    <font size="7">
+                        <font color="yellow"><b>TAXI</b></font>SLUŽBA
+                    </font>
+                </font>
+                <table align="right">
+                    <tr>
+                        <td colspan="8">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td><input id="submitLogout" type="button" name="submitLogout" value="Izlogujte se" style="background-color:yellow; color:black; border:1px solid gray; resize:initial;"></td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="ContentDiv" class="row">
+            <table align="center">
+                <tr><td colspan="3"></td></tr>
+                <tr>
+                    <td colspan="3" rowspan="3" align="center" valign="middle">Komentar:</td>
+                </tr>
+                <tr><td colspan="3"></td></tr>
+                <tr><td colspan="3"></td></tr>
+                <tr>
+                    <td>Opis: </td>
+                    <td colspan="2" width="300"><input size="43" id="opis" type="text" name="opis"></td>
+                </tr>
+                <tr>
+                    <td>Ocena: </td>
+                    <td colspan="2" width="300">
+                        <select name="ocena" id="ocena">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="right"><input id="submitComment" type="button" name="submitComment" value="Sačuvaj"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(function () {
+
+            $('#submitLogout').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Logout',
+                    data: '',
+                    success: function (data) {
+                        window.location.href = '/Home/Index';
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+                $('input[type="text"]').val('');
+                window.location.href = '/Home/Index';
+            });
+
+            $('#submitCancel').on('click', function () {
+                history.back(1);
+            });
+        });
+    </script>
+
+    <script>
+        $('#submitComment').on('click', function () {
+            var data = {
+                Opis: $('#opis').val(),
+                Ocena: $('#ocena').val(),
+            };
+
+            var JSONObj = JSON.stringify(data);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Comment',
+                data: JSONObj,
+                success: function (data) {
+                    window.location.href = '/Home';
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+
+    </script>
+</body>

@@ -115,9 +115,9 @@ namespace TaxiSluzba.Controllers
                 v.ZeljeniTipVozila = TipVozila.NEBITNO;
             v.StatusVoznje = Status.KREIRANA_NA_CEKANJU;
             v.VremePorudzbine = DateTime.Now;
-            //Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
-            Global.DodajVoznju(v);
+            Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);
             Global.Musterije[musterija.KorisnickoIme].Voznje.Add(v);
+            Global.RewriteAllTxt();
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings()
             {
@@ -133,17 +133,13 @@ namespace TaxiSluzba.Controllers
         public IHttpActionResult CancelRide(HttpRequestMessage value)
         {
             IHttpActionResult response;
-            var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
 
-            string vremeVoznje = data["VremeVoznje"].ToString();
-            Komentar k = new Komentar();
-            k.KomentarisanaVoznja = Global.Voznje[vremeVoznje];
-            k.Opis = data["Komentar"].ToString();
-            k.VlasnikKomentara = (Korisnik)HttpContext.Current.Session["korisnik"];
-            k.DatumObjave = DateTime.Now.Date;
+            var jo = JObject.Parse(value.Content.ReadAsStringAsync().Result);
+            var voznja = jo["Voznja"].ToString();
 
-            Global.Voznje[vremeVoznje].StatusVoznje = Status.OTKAZANA;
-            Global.Voznje[vremeVoznje].Komentari.Add(k);
+            HttpContext.Current.Session["voznja"] = Global.Voznje[voznja];
+            HttpContext.Current.Session["commentType"] = "cancel";
+
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,

@@ -50,7 +50,7 @@ namespace TaxiSluzba.Controllers
                     v.Lokacija.Adresa.Mesto = "Novi Sad";
                     v.Lokacija.Adresa.PostanskiBroj = 21000;
                     Global.Vozaci.Add(v.KorisnickoIme, v);
-                    //Global.DodajVozaca(v);
+                    Global.RewriteAllTxt();
                 }
                 else
                 {
@@ -64,8 +64,8 @@ namespace TaxiSluzba.Controllers
                     m.KontaktTelefon = k.KontaktTelefon;
                     m.Email = k.Email;
                     m.Uloga = k.Uloga;
-                    //Global.Musterije.Add(m.KorisnickoIme, m);
-                    Global.DodajMusteriju(m);
+                    Global.Musterije.Add(m.KorisnickoIme, m);
+                    Global.RewriteAllTxt();
                 }
                 Global.Korisnici.Add(k.KorisnickoIme, k);
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], new JsonSerializerSettings()
@@ -94,8 +94,8 @@ namespace TaxiSluzba.Controllers
             {
                 a.Vozac = Global.Vozaci[a.Vozac.KorisnickoIme];
                 Global.Vozaci[a.Vozac.KorisnickoIme].Automobil = a;
-                Global.DodajAutomobil(a);
-                Global.DodajVozaca(Global.Vozaci[a.Vozac.KorisnickoIme]);
+                Global.Automobili.Add(a.TaxiOznaka, a);
+                Global.RewriteAllTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Automobili[a.TaxiOznaka], new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -113,10 +113,17 @@ namespace TaxiSluzba.Controllers
             IHttpActionResult response;
             Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
 
-            Global.IzmeniKorisnika(k);
-
             if (Global.Dispeceri.Keys.Contains(k.KorisnickoIme))
             {
+                k.Uloga = Uloga.DISPECER;
+                Global.Dispeceri[k.KorisnickoIme].Lozinka = k.Lozinka;
+                Global.Dispeceri[k.KorisnickoIme].Ime = k.Ime;
+                Global.Dispeceri[k.KorisnickoIme].Prezime = k.Prezime;
+                Global.Dispeceri[k.KorisnickoIme].Pol = k.Pol;
+                Global.Dispeceri[k.KorisnickoIme].Jmbg = k.Jmbg;
+                Global.Dispeceri[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
+                Global.Dispeceri[k.KorisnickoIme].Email = k.Email;
+                Global.RewriteAllTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[k.KorisnickoIme], new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -125,6 +132,16 @@ namespace TaxiSluzba.Controllers
             }
             else if (Global.Vozaci.Keys.Contains(k.KorisnickoIme))
             {
+                k.Uloga = Uloga.VOZAC;
+                Global.Vozaci[k.KorisnickoIme].Lozinka = k.Lozinka;
+                Global.Vozaci[k.KorisnickoIme].Ime = k.Ime;
+                Global.Vozaci[k.KorisnickoIme].Prezime = k.Prezime;
+                Global.Vozaci[k.KorisnickoIme].Pol = k.Pol;
+                Global.Vozaci[k.KorisnickoIme].Jmbg = k.Jmbg;
+                Global.Vozaci[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
+                Global.Vozaci[k.KorisnickoIme].Email = k.Email;
+                Global.Korisnici[k.KorisnickoIme] = (Korisnik)Global.Vozaci[k.KorisnickoIme];
+                Global.RewriteAllTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Vozaci[k.KorisnickoIme], new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -133,6 +150,16 @@ namespace TaxiSluzba.Controllers
             }
             else if (Global.Musterije.Keys.Contains(k.KorisnickoIme))
             {
+                k.Uloga = Uloga.MUSTERIJA;
+                Global.Musterije[k.KorisnickoIme].Lozinka = k.Lozinka;
+                Global.Musterije[k.KorisnickoIme].Ime = k.Ime;
+                Global.Musterije[k.KorisnickoIme].Prezime = k.Prezime;
+                Global.Musterije[k.KorisnickoIme].Pol = k.Pol;
+                Global.Musterije[k.KorisnickoIme].Jmbg = k.Jmbg;
+                Global.Musterije[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
+                Global.Musterije[k.KorisnickoIme].Email = k.Email;
+                Global.Korisnici[k.KorisnickoIme] = (Korisnik)Global.Musterije[k.KorisnickoIme];
+                Global.RewriteAllTxt();
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,

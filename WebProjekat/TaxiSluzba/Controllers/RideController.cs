@@ -29,7 +29,7 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
-        // POST: api/Login
+        // POST: api/Ride
         [HttpPost]
         public IHttpActionResult Post(HttpRequestMessage value)
         {

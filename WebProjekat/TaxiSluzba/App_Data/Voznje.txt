@@ -1,0 +1,53 @@
+{
+  "$id": "1",
+  "VremePorudzbine": "2019-01-07T23:27:08.8309912+01:00",
+  "PocetnaLokacija": {
+    "$id": "2",
+    "KoordinataX": 45.2424025,
+    "KoordinataY": 19.8431302924445,
+    "Adresa": {
+      "$id": "3",
+      "Ulica": "Bulevar oslobodjenja",
+      "Broj": 133,
+      "Mesto": "Novi Sad",
+      "PostanskiBroj": 21000
+    }
+  },
+  "ZeljeniTipVozila": 1,
+  "Musterija": {
+    "$id": "4",
+    "KorisnickoIme": "mile",
+    "Lozinka": "123",
+    "Ime": "Stefan",
+    "Prezime": "Milenkovic",
+    "Pol": 0,
+    "KontaktTelefon": "0677019297",
+    "Email": "stefan.m@uns.ac.rs",
+    "Uloga": 2,
+    "Voznje": [
+      {
+        "$ref": "1"
+      }
+    ],
+    "Jmbg": "2204996762035"
+  },
+  "Odrediste": null,
+  "Dispecer": null,
+  "Iznos": 0.0,
+  "StatusVoznje": 1,
+  "Vozac": null,
+  "Komentari": [
+    {
+      "$id": "5",
+      "Opis": "test",
+      "DatumObjave": "2019-01-07T23:27:21.952235+01:00",
+      "VlasnikKomentara": {
+        "$ref": "4"
+      },
+      "KomentarisanaVoznja": {
+        "$ref": "1"
+      },
+      "Ocena": 1
+    }
+  ]
+}###

@@ -124,7 +124,8 @@
                     <form id="zahtevajVoznju">
                         Tip automobila:
                         <br />
-                        <select name="tipAutomobila" id="tipAutomobila" size="2" style="width:350px">
+                        <select name="tipAutomobila" id="tipAutomobila" size="3" style="width:350px">
+                            <option>Nebitno</option>
                             <option>Putničko</option>
                             <option>Kombi</option>
                         </select>
@@ -148,10 +149,6 @@
                         Neobrađeni zahtevi:
                         <br />
                         <select name="nedodeljeneVoznjeOtkazi" id="nedodeljeneVoznjeOtkazi" size="5" style="width:350px"></select>
-                        <br />
-                        Komentar:
-                        <br />
-                        <input style="width:350px;height:80px;cursor:text;" id="komentarOtkazi" type="text" name="komentarOtkazi">
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitOtkaziVoznju" type="button" name="submitOtkaziVoznju" value="Poništite zahtev">
                     </form>
@@ -398,23 +395,22 @@
     <script>
         $('#submitOtkaziVoznju').on('click', function () {
             var data = {
-                VremeVoznje: $('#nedodeljeneVoznjeOtkazi').val(),
-                Komentar: $('#otkaziKomentar').val()
+                Voznja: $('#nedodeljeneVoznjeOtkazi').val(),
             };
 
             var JSONObj = JSON.stringify(data);
+
             $.ajax({
                 type: 'PUT',
                 url: '/api/Customer/CancelRide',
                 data: JSONObj,
                 success: function (data) {
-                    window.location.href = '/Home/Customer';
+                    window.location.href = '/Home/AddComment';
                 },
                 error: function (response) {
                     alert(response.responseText);
                 }
             });
-
         });
 
     </script>
