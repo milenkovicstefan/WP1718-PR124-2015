@@ -22,11 +22,23 @@ namespace TaxiSluzba.Controllers
             var korisnicko = jo["KorisnickoIme"].ToString();
 
             if (!Global.Dispeceri.Keys.Contains(korisnicko) && !Global.Korisnici.Keys.Contains(korisnicko))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisnik pod imenom " + korisnicko + " ne postoji.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisnik pod imenom " + korisnicko + " ne postoji.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else if (Global.Dispeceri.Keys.Contains(korisnicko))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
 
             return response;
         }
@@ -45,7 +57,11 @@ namespace TaxiSluzba.Controllers
             var korisnicko = jo["KorisnickoIme"].ToString();
 
             if (!Global.Dispeceri.Keys.Contains(korisnicko) && !Global.Korisnici.Keys.Contains(korisnicko))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisnik pod imenom " + korisnicko + " ne postoji.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisnik pod imenom " + korisnicko + " ne postoji.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else
             {
                 Korisnik temp = new Korisnik()
@@ -62,20 +78,32 @@ namespace TaxiSluzba.Controllers
                 if (Global.Dispeceri.Keys.Contains(korisnicko))
                 {
                     Global.Dispeceri[korisnicko] = (Dispecer)temp;
-                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], Formatting.Indented)));
+                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[korisnicko], new JsonSerializerSettings()
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                        Formatting = Formatting.Indented
+                    })));
 
                 }
                 else if (Global.Korisnici[korisnicko].Uloga == Uloga.VOZAC)
                 {
                     Global.Vozaci[korisnicko] = (Vozac)temp;
                     Global.Korisnici[korisnicko] = temp;
-                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], Formatting.Indented)));
+                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], new JsonSerializerSettings()
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                        Formatting = Formatting.Indented
+                    })));
                 }
                 else
                 {
                     Global.Musterije[korisnicko] = (Musterija)temp;
                     Global.Korisnici[korisnicko] = temp;
-                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], Formatting.Indented)));
+                    response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[korisnicko], new JsonSerializerSettings()
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                        Formatting = Formatting.Indented
+                    })));
                 }
             }
 
@@ -91,16 +119,28 @@ namespace TaxiSluzba.Controllers
             var korisnicko = jo["KorisnickoIme"].ToString();
 
             if (!Global.Dispeceri.Keys.Contains(korisnicko) && !Global.Korisnici.Keys.Contains(korisnicko))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisnik pod imenom " + korisnicko + " ne postoji.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisnik pod imenom " + korisnicko + " ne postoji.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else if (Global.Dispeceri.Keys.Contains(korisnicko))
             { 
                 Global.Dispeceri.Remove(korisnicko);
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Korisnik " + korisnicko + " obrisan.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Korisnik " + korisnicko + " obrisan.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
             else
             {
                 Global.Korisnici.Remove(korisnicko);
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Korisnik " + korisnicko + " obrisan.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Korisnik " + korisnicko + " obrisan.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
 
             return response;

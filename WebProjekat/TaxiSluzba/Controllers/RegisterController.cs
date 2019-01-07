@@ -22,7 +22,11 @@ namespace TaxiSluzba.Controllers
             Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
 
             if (Global.Dispeceri.Keys.Contains(k.KorisnickoIme) || Global.Korisnici.Keys.Contains(k.KorisnickoIme))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisničko ime zauzeto. Pokušajte ponovo.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Korisničko ime zauzeto. Pokušajte ponovo.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else
             {
                 if (k.Uloga == Uloga.VOZAC)
@@ -45,8 +49,8 @@ namespace TaxiSluzba.Controllers
                     v.Lokacija.Adresa.Broj = 131;
                     v.Lokacija.Adresa.Mesto = "Novi Sad";
                     v.Lokacija.Adresa.PostanskiBroj = 21000;
-                    //Global.Vozaci.Add(v.KorisnickoIme, v);
-                    Global.DodajVozaca(v);
+                    Global.Vozaci.Add(v.KorisnickoIme, v);
+                    //Global.DodajVozaca(v);
                 }
                 else
                 {
@@ -64,7 +68,39 @@ namespace TaxiSluzba.Controllers
                     Global.DodajMusteriju(m);
                 }
                 Global.Korisnici.Add(k.KorisnickoIme, k);
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
+            }
+
+            return response;
+        }
+
+        [HttpPost, Route("api/Register/AddCar")]
+        public IHttpActionResult AddCar(HttpRequestMessage value)
+        {
+            IHttpActionResult response;
+            Automobil a = JsonConvert.DeserializeObject<Automobil>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
+
+            if (Global.Automobili.Keys.Contains(a.TaxiOznaka))
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Automobil sa unetom taxi oznakom već postoji.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
+            else
+            {
+                a.Vozac = Global.Vozaci[a.Vozac.KorisnickoIme];
+                Global.Vozaci[a.Vozac.KorisnickoIme].Automobil = a;
+                Global.DodajAutomobil(a);
+                Global.DodajVozaca(Global.Vozaci[a.Vozac.KorisnickoIme]);
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Automobili[a.TaxiOznaka], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
 
             return response;
@@ -81,19 +117,35 @@ namespace TaxiSluzba.Controllers
 
             if (Global.Dispeceri.Keys.Contains(k.KorisnickoIme))
             {
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[k.KorisnickoIme], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Dispeceri[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
             else if (Global.Vozaci.Keys.Contains(k.KorisnickoIme))
             {
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Vozaci[k.KorisnickoIme], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Vozaci[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
             else if (Global.Musterije.Keys.Contains(k.KorisnickoIme))
             {
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Korisnici[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
             else
             {
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisničko ime zauzeto. Pokušajte ponovo.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisničko ime zauzeto. Pokušajte ponovo.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
 
             return response;

@@ -160,6 +160,28 @@
                                 <td>E-mail: </td>
                                 <td><input id="email" type="email" name="email" required></td>
                             </tr>
+
+                            <tr>
+                                <td>Godište automobila: </td>
+                                <td><input id="godiste" type="text" name="godiste" required></td>
+                            </tr>
+                            <tr>
+                                <td>Registarska oznaka: </td>
+                                <td><input id="regOznaka" type="text" name="regOznaka" required></td>
+                            </tr>
+                            <tr>
+                                <td>Taxi oznaka: </td>
+                                <td><input id="taxiOznaka" type="text" name="taxiOznaka" required></td>
+                            </tr>
+                            <tr>
+                                <td>Tip automobila: </td>
+                                <td><select name="tip" id="tip">
+                                        <option>Nebitno</option>
+                                        <option>Putničko</option>
+                                        <option>Kombi</option>
+                                    </select>
+                                </td>
+                            </tr>
                             <tr>
                                 <td>&nbsp; </td>
                                 <td><input id="submitRegistracija" type="button" name="submitRegistracija" value="Registrujte vozača"></td>
@@ -412,15 +434,36 @@
                     Uloga: 1
                 };
 
+                var car = {
+                    Vozac: user,
+                    Godiste: $('#godiste').val(),
+                    RegistarskaOznaka: $('#regOznaka').val(),
+                    TaxiOznaka: $('#taxiOznaka').val(),
+                    Tip: $('#tip').prop('selectedIndex')
+                };
+
                 var JSONObj = JSON.stringify(user);
+                var JSONCar = JSON.stringify(car);
 
                 $.ajax({
                     type: 'POST',
                     url: '/api/Register',
                     data: JSONObj,
                     success: function (data) {
-                        var object = JSON.parse(data);
-                        alert('Vozač ' + object.KorisnickoIme + ' registrovan.');
+                        //var object = JSON.parse(data);
+                        //alert('Vozač ' + object.KorisnickoIme + ' registrovan.');
+                        $.ajax({
+                            type: 'POST',
+                            url: '/api/Register/AddCar',
+                            data: JSONCar,
+                            success: function (data) {
+                                var object = JSON.parse(data);
+                                alert('Vozač ' + object.Vozac.KorisnickoIme + ' registrovan.');
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
                     },
                     error: function (response) {
                         alert(response.responseText);

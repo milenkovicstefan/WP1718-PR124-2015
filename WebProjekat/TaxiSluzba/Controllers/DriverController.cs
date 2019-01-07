@@ -50,7 +50,11 @@ namespace TaxiSluzba.Controllers
                     voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
@@ -100,7 +104,11 @@ namespace TaxiSluzba.Controllers
             Global.Voznje[vremeVoznje].Iznos = iznos;
             Global.Voznje[vremeVoznje].Odrediste = l;
             Global.Voznje[vremeVoznje].StatusVoznje = Status.USPESNA;
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }

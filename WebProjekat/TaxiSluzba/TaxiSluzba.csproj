@@ -210,6 +210,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Automobili.txt" />
+    <Content Include="App_Data\Banovani.txt" />
     <Content Include="App_Data\Dispeceri.txt" />
     <Content Include="App_Data\Musterije.txt" />
     <Content Include="App_Data\Vozaci.txt" />

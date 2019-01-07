@@ -23,7 +23,8 @@ namespace TaxiSluzba.Models
 
     public enum TipVozila
     {
-        PUTNICKO = 0,
+        NEBITNO = 0,
+        PUTNICKO,
         KOMBI
     };
 

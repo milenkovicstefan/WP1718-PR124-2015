@@ -27,7 +27,11 @@ namespace TaxiSluzba.Controllers
                     korisnici.Add(korisnik.KorisnickoIme);
             }
 
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(korisnici, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(korisnici, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
@@ -44,7 +48,11 @@ namespace TaxiSluzba.Controllers
                 korisnici.Add(korisnik.KorisnickoIme);
             }
 
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(korisnici, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(korisnici, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
@@ -108,7 +116,11 @@ namespace TaxiSluzba.Controllers
                 voznje.Add(voznja);
             }
 
-            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, Formatting.Indented)));
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
 
             return response;
         }
@@ -120,13 +132,25 @@ namespace TaxiSluzba.Controllers
             Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
 
             if (!Global.Korisnici.Keys.Contains(k.KorisnickoIme))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisnik nije pronađen", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisnik nije pronađen", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else if (Global.Blokirani.Keys.Contains(k.KorisnickoIme))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisnik je već blokiran", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisnik je već blokiran", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else
             {
-                Global.Blokirani.Add(k.KorisnickoIme, Global.Korisnici[k.KorisnickoIme]);
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Blokirani[k.KorisnickoIme], Formatting.Indented)));
+                Global.BlokirajKorisnika(k);
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Blokirani[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
 
             return response;
@@ -153,6 +177,8 @@ namespace TaxiSluzba.Controllers
                 v.ZeljeniTipVozila = TipVozila.PUTNICKO;
             else if (tip.Equals("Kombi"))
                 v.ZeljeniTipVozila = TipVozila.KOMBI;
+            else
+                v.ZeljeniTipVozila = TipVozila.NEBITNO;
             v.Vozac = Global.Vozaci[vozacKorisnicko];
             v.StatusVoznje = Status.FORMIRANA;
             v.VremePorudzbine = DateTime.Now;
@@ -179,11 +205,19 @@ namespace TaxiSluzba.Controllers
             Korisnik k = JsonConvert.DeserializeObject<Korisnik>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
 
             if (!Global.Blokirani.Keys.Contains(k.KorisnickoIme))
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisnik nije pronađen", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, JsonConvert.SerializeObject("Korisnik nije pronađen", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             else
             {
-                Global.Blokirani.Remove(k.KorisnickoIme);
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(k.KorisnickoIme, Formatting.Indented)));
+                Global.OdblokirajKorisnika(k);
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(k.KorisnickoIme, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
 
             return response;

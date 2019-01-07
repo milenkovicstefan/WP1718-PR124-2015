@@ -19,6 +19,7 @@ namespace TaxiSluzba.App_Code
         private static Dictionary<string, Musterija> musterije = new Dictionary<string, Musterija>();
         private static Dictionary<string, Korisnik> blokirani = new Dictionary<string, Korisnik>();
         private static Dictionary<string, Voznja> voznje = new Dictionary<string, Voznja>();
+        private static Dictionary<string, Automobil> automobili = new Dictionary<string, Automobil>();
 
         public static Dictionary<string, Dispecer> Dispeceri
         {
@@ -98,17 +99,34 @@ namespace TaxiSluzba.App_Code
             }
         }
 
+        public static Dictionary<string, Automobil> Automobili
+        {
+            get
+            {
+                return automobili;
+            }
+
+            set
+            {
+                automobili = value;
+            }
+        }
+
         public static void DodajVozaca(Vozac vozac)
         {
             string path = HttpContext.Current.Server.MapPath("~/App_Data/Vozaci.txt");
 
             using (var sw = new StreamWriter(path, append:true))
             {
-                var jsonObj = JsonConvert.SerializeObject(vozac);
+                var jsonObj = JsonConvert.SerializeObject(vozac, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                }); ;
                 sw.WriteLine(jsonObj);
             }
 
-            Vozaci.Add(vozac.KorisnickoIme, vozac);
+            //Vozaci.Add(vozac.KorisnickoIme, vozac);
         }
 
         public static void DodajMusteriju(Musterija musterija)
@@ -117,7 +135,11 @@ namespace TaxiSluzba.App_Code
 
             using (var sw = new StreamWriter(path, append: true))
             {
-                var jsonObj = JsonConvert.SerializeObject(musterija);
+                var jsonObj = JsonConvert.SerializeObject(musterija, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                }); ;
                 sw.WriteLine(jsonObj);
             }
 
@@ -130,11 +152,70 @@ namespace TaxiSluzba.App_Code
 
             using (var sw = new StreamWriter(path, append: true))
             {
-                var jsonObj = JsonConvert.SerializeObject(voznja);
+                var jsonObj = JsonConvert.SerializeObject(voznja, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
                 sw.WriteLine(jsonObj);
             }
 
             Voznje.Add(voznja.VremePorudzbine.Ticks.ToString(), voznja);
+        }
+
+        public static void DodajAutomobil(Automobil automobil)
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Automobili.txt");
+
+            using (var sw = new StreamWriter(path, append: true))
+            {
+                var jsonObj = JsonConvert.SerializeObject(automobil, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
+                sw.WriteLine(jsonObj);
+            }
+
+            Automobili.Add(automobil.TaxiOznaka, automobil);
+        }
+
+        public static void BlokirajKorisnika(Korisnik korisnik)
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Banovani.txt");
+
+            using (var sw = new StreamWriter(path, append: true))
+            {
+                var jsonObj = JsonConvert.SerializeObject(korisnik, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
+                sw.WriteLine(jsonObj);
+            }
+
+            Blokirani.Add(korisnik.KorisnickoIme, Korisnici[korisnik.KorisnickoIme]);
+        }
+
+        public static void OdblokirajKorisnika(Korisnik korisnik)
+        {
+            string path = HttpContext.Current.Server.MapPath("~/App_Data/Banovani.txt");
+
+            string line_to_delete = JsonConvert.SerializeObject(korisnik, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            });
+
+            if (File.Exists(path))
+            {
+                var txtLines = File.ReadAllLines(path).ToList();
+                int index = txtLines.IndexOf(line_to_delete);
+                txtLines.RemoveAt(index);
+                File.WriteAllLines(path, txtLines);
+            }
+
+            Blokirani.Remove(korisnik.KorisnickoIme);
         }
 
         public static void IzmeniKorisnika(Korisnik k)
@@ -153,7 +234,11 @@ namespace TaxiSluzba.App_Code
                 Dispeceri[k.KorisnickoIme].Jmbg = k.Jmbg;
                 Dispeceri[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
                 Dispeceri[k.KorisnickoIme].Email = k.Email;
-                line_to_insert = JsonConvert.SerializeObject(Dispeceri[k.KorisnickoIme]);
+                line_to_insert = JsonConvert.SerializeObject(Dispeceri[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
             }
             else if (Vozaci.Keys.Contains(k.KorisnickoIme))
             {
@@ -167,7 +252,11 @@ namespace TaxiSluzba.App_Code
                 Vozaci[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
                 Vozaci[k.KorisnickoIme].Email = k.Email;
                 Korisnici[k.KorisnickoIme] = (Korisnik)Vozaci[k.KorisnickoIme];
-                line_to_insert = JsonConvert.SerializeObject(Vozaci[k.KorisnickoIme]);
+                line_to_insert = JsonConvert.SerializeObject(Vozaci[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
             }
             else if (Musterije.Keys.Contains(k.KorisnickoIme))
             {
@@ -181,7 +270,11 @@ namespace TaxiSluzba.App_Code
                 Musterije[k.KorisnickoIme].KontaktTelefon = k.KontaktTelefon;
                 Musterije[k.KorisnickoIme].Email = k.Email;
                 Korisnici[k.KorisnickoIme] = (Korisnik)Musterije[k.KorisnickoIme];
-                line_to_insert = JsonConvert.SerializeObject(Musterije[k.KorisnickoIme]);
+                line_to_insert = JsonConvert.SerializeObject(Musterije[k.KorisnickoIme], new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                });
             }
 
             string path = "noPath";

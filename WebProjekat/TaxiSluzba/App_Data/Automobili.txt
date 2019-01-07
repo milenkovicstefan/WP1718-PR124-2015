@@ -1,0 +1,35 @@
+﻿{
+  "$id": "1",
+  "Vozac": {
+    "$id": "2",
+    "Lokacija": {
+      "$id": "3",
+      "KoordinataX": 45.24239,
+      "KoordinataY": 19.8426221,
+      "Adresa": {
+        "$id": "4",
+        "Ulica": "Bulevar oslobodjenja",
+        "Broj": 131,
+        "Mesto": "Novi Sad",
+        "PostanskiBroj": 21000
+      }
+    },
+    "Automobil": {
+      "$ref": "1"
+    },
+    "KorisnickoIme": "vozac",
+    "Lozinka": "123",
+    "Ime": "saf",
+    "Prezime": "dsgfq",
+    "Pol": 0,
+    "KontaktTelefon": "8156",
+    "Email": "vozac@mail.com",
+    "Uloga": 1,
+    "Voznje": [],
+    "Jmbg": "135186"
+  },
+  "Godiste": 2014,
+  "RegistarskaOznaka": "NS123NH",
+  "TaxiOznaka": "T001",
+  "Tip": 1
+}

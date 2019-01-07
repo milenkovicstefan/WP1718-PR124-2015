@@ -111,6 +111,8 @@ namespace TaxiSluzba.Controllers
                 v.ZeljeniTipVozila = TipVozila.PUTNICKO;
             else if (tip.Equals("Kombi"))
                 v.ZeljeniTipVozila = TipVozila.KOMBI;
+            else
+                v.ZeljeniTipVozila = TipVozila.NEBITNO;
             v.StatusVoznje = Status.KREIRANA_NA_CEKANJU;
             v.VremePorudzbine = DateTime.Now;
             //Global.Voznje.Add(v.VremePorudzbine.Ticks.ToString(), v);

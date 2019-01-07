@@ -21,7 +21,11 @@ namespace TaxiSluzba.Controllers
         {
             Korisnik k = (Korisnik)HttpContext.Current.Session["korisnik"];
 
-            return Ok(JsonConvert.SerializeObject(k, Formatting.Indented));
+            return Ok(JsonConvert.SerializeObject(k, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            }));
         }
 
         // POST: api/Login
@@ -54,7 +58,11 @@ namespace TaxiSluzba.Controllers
             }
             else
             {
-                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Neuspešno logovanje. Proverite korisničko ime i lozinku.", Formatting.Indented)));
+                response = ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, JsonConvert.SerializeObject("Neuspešno logovanje. Proverite korisničko ime i lozinku.", new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                })));
             }
 
             return response;
