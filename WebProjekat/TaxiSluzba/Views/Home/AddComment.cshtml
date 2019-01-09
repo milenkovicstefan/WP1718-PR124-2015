@@ -41,6 +41,7 @@
                     <td>Ocena: </td>
                     <td colspan="2" width="300">
                         <select name="ocena" id="ocena">
+                            <option>0</option>
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
@@ -56,6 +57,22 @@
         </div>
     </div>
     <script>
+        $.ajax({
+            type: 'GET',
+            url: '/api/Login',
+            success: function (data) {
+                var object = JSON.parse(data);
+                if (object != null) {
+                    if (object.Uloga == 1) {
+                        $('#ocena').prop('disabled', true);
+                    }
+                }
+                else {
+                    window.location.href = '/Home/Index';
+                }
+            },
+        });
+
         $(function () {
 
             $('#submitLogout').on('click', function () {

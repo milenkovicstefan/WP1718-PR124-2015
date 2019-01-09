@@ -114,7 +114,6 @@
             <div class="left">
                 <div id="map" class="map"></div>
                 <button class="locBtn" id="find_btn">Locirajte se</button>
-                <button class="locBtn" id="saveLocation">Sačuvajte lokaciju</button>
                 <input type="hidden" id="latitude" name="latitude" value=45.24239>
                 <input type="hidden" id="longitude" name="longitude" value=19.8426221>
                 <input type="hidden" id="address" name="address" value="">
@@ -150,10 +149,6 @@
                         Prihvaćene/dodeljene vožnje:
                         <br />
                         <select name="dodeljeneVoznjeCancel" id="dodeljeneVoznjeCancel" size="5" style="width:350px"></select>
-                        <br />
-                        Komentar:
-                        <br />
-                        <input style="width:350px;height:80px;cursor:text;" id="voznjaCancelKomentar" type="text" name="voznjaCancelKomentar">
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="voznjaCancel" type="button" name="voznjaCancel" value="Neuspešna vožnja">
                     </form>
@@ -198,6 +193,29 @@
         $('#submitProfil').on('click', function () {
             window.location.href = '/Home/EditProfile';
         });
+
+        $('#submitPrikaziVoznju').on('click', function () {
+
+            var ride = {
+                Voznja: $('#voznje').val(),
+            };
+
+            var JSONObj = JSON.stringify(ride);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Ride',
+                data: JSONObj,
+                success: function (data) {
+
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            window.location.href = '/Home/RideInfo';
+        });
     </script>
 
     <script>
@@ -218,7 +236,6 @@
     </script>
 
     <script type="text/javascript">
-
         const markerSource = new ol.source.Vector();
         var markerStyle = new ol.style.Style({
             image: new ol.style.Icon(({
@@ -241,13 +258,13 @@
                 }),
             ],
             view: new ol.View({
-                center: ol.proj.fromLonLat([19.8426221, 45.24239]),
+                center: ol.proj.fromLonLat([$("#longitude").val(), $("#latitude").val()]),
                 zoom: 17
             })
         });
-        addMarker(19.8426221, 45.24239);
-        reverseGeocode([19.8426221, 45.24239])
-        var address;
+
+        GetDriverLocation();
+        
         function reverseGeocode(coords) {
             fetch('http://nominatim.openstreetmap.org/reverse?format=json&lon=' + coords[0] + '&lat=' + coords[1])
                 .then(function (response) {
@@ -256,31 +273,29 @@
                     $("#latitude").val(json.lat);
                     $("#longitude").val(json.lon);
                     $('#address').val(json.address.road + " " + json.address.house_number + ", " + json.address.city + " " + json.address.postcode);
-                    address = json.address;
+                    var lokacija = {
+                        KoordinataX: $('#latitude').val(),
+                        KoordinataY: $('#longitude').val(),
+                        Adresa: {
+                            Ulica: json.address.road,
+                            Broj: json.address.house_number,
+                            Mesto: json.address.city,
+                            PostanskiBroj: json.address.postcode
+                        }
+                    };
+
+                    var JSONObj = JSON.stringify(lokacija);
+
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/api/Driver/UpdateLocation',
+                        data: JSONObj,
+                        success: function (data) {
+                            console.log(data);
+                        }
+
+                    });
                 });
-
-            var data = {
-                KoordinataX: $('#latitude').val(),
-                KoordinataY: $('#longitude').val(),
-                Adresa: {
-                    Ulica: address.road,
-                    Broj: address.house_number,
-                    Mesto: address.city,
-                    PostanskiBroj: address.postcode
-                }
-            };
-
-            var JSONObj = JSON.stringify(data);
-
-            $.ajax({
-                type: 'PUT',
-                url: '/api/Driver/UpdateLocation',
-                data: JSONObj,
-                success: function (data) {
-                        console.log(data);
-                    }
-                },
-            });
         }
 
 
@@ -328,6 +343,32 @@
         function CenterMap(long, lat) {
             map.getView().setCenter(ol.proj.transform([long, lat], 'EPSG:4326', 'EPSG:3857'));
             map.getView().setZoom(17);
+        }
+
+        function GetDriverLocation() {
+            console.log('getLat ' + $('#latitude').val());
+            console.log('getLat ' + $('#longitude').val());
+            console.log('getLat ' + $('#address').val());
+            $.ajax({
+                type: 'GET',
+                url: '/api/Driver/GetDriverLocation',
+                success: function (data) {
+                    var location = JSON.parse(data);
+                    $("#latitude").val(location.KoordinataX);
+                    $("#longitude").val(location.KoordinataY);
+                    $('#address').val(location.Adresa.Ulica + " " + location.Adresa.Broj + ", " + location.Adresa.Mesto + " " + location.Adresa.PostanskiBroj);
+                    console.log('Current loc ' + location.KoordinataX + ' ' + location.KoordinataY);
+                    console.log($('#latitude').val());
+                    console.log($('#longitude').val());
+                    console.log($('#address').val());
+                    addMarker(location.KoordinataY, location.KoordinataX);
+                    reverseGeocode([location.KoordinataY, location.KoordinataX])
+                    return true;
+                },
+                error: function (response) {
+                    return false;
+                }
+            });
         }
     </script>
 
@@ -421,17 +462,17 @@
     <script>
         $('#voznjaCancel').on('click', function () {
             var data = {
-                VremeVoznje: $('#dodeljeneVoznjeCancel').val(),
-                Komentar: $('#voznjaCancelKomentar').val()
+                Voznja: $('#dodeljeneVoznjeCancel').val(),
             };
 
             var JSONObj = JSON.stringify(data);
+
             $.ajax({
                 type: 'PUT',
                 url: '/api/Driver/RideCanceled',
                 data: JSONObj,
                 success: function (data) {
-                    window.location.href = '/Home/Driver';
+                    window.location.href = '/Home/AddComment';
                 },
                 error: function (response) {
                     alert(response.responseText);

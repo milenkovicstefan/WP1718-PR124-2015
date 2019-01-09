@@ -165,6 +165,14 @@
                 <div class="panel">
                     <p>a</p>
                 </div>
+                <button class="accordion">Ostavite komentar</button>
+                <div class="panel">
+                    <form id="komentarisiVoznje">
+                        <select name="voznjeKomentar" id="voznjeKomentar" size="5" style="width:350px"></select>
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitKomentarisiVoznju" type="button" name="submitKomentarisiVoznju" value="Ostavite komentar">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -192,6 +200,29 @@
 
         $('#submitProfil').on('click', function () {
             window.location.href = '/Home/EditProfile';
+        });
+
+        $('#submitPrikaziVoznju').on('click', function () {
+
+            var ride = {
+                Voznja: $('#voznje').val(),
+            };
+
+            var JSONObj = JSON.stringify(ride);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Ride',
+                data: JSONObj,
+                success: function (data) {
+
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            window.location.href = '/Home/RideInfo';
         });
     </script>
 
@@ -342,6 +373,20 @@
                 },
             });
 
+            $.ajax({
+                type: 'GET',
+                url: '/api/Customer/GetFinishedCustomerRides',
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#voznjeKomentar").append('<option>' + array[i] + '</option>');
+                        }
+                        console.log(array);
+                    }
+                },
+            });
+
         })
     </script>
 
@@ -413,5 +458,25 @@
             });
         });
 
+
+        $('#submitKomentarisiVoznju').on('click', function () {
+            var data = {
+                Voznja: $('#voznjeKomentar').val(),
+            };
+
+            var JSONObj = JSON.stringify(data);
+
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Customer/CommentRide',
+                data: JSONObj,
+                success: function (data) {
+                    window.location.href = '/Home/AddComment';
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
     </script>
 </body>

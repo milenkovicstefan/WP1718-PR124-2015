@@ -1,0 +1,35 @@
+{
+  "$id": "1",
+  "Lokacija": {
+    "$id": "2",
+    "KoordinataX": 45.2548912,
+    "KoordinataY": 19.838387,
+    "Adresa": {
+      "$id": "3",
+      "Ulica": "Pavla Papa",
+      "Broj": 19,
+      "Mesto": "Novi Sad",
+      "PostanskiBroj": 21101
+    }
+  },
+  "Automobil": {
+    "$id": "4",
+    "Vozac": {
+      "$ref": "1"
+    },
+    "Godiste": 2009,
+    "RegistarskaOznaka": "NS007KO",
+    "TaxiOznaka": "T001",
+    "Tip": 1
+  },
+  "KorisnickoIme": "vozac",
+  "Lozinka": "123",
+  "Ime": "Voki",
+  "Prezime": "Vokic",
+  "Pol": 0,
+  "KontaktTelefon": "659865",
+  "Email": "vozac@mail.com",
+  "Uloga": 1,
+  "Voznje": [],
+  "Jmbg": "1236"
+}###

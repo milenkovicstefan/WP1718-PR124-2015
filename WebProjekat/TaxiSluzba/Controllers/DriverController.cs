@@ -14,6 +14,24 @@ namespace TaxiSluzba.Controllers
 {
     public class DriverController : ApiController
     {
+        [HttpGet, Route("api/Driver/GetDriverLocation")]
+        public IHttpActionResult GetDriverLocation()
+        {
+            IHttpActionResult response;
+
+            Korisnik vozac = (Korisnik)HttpContext.Current.Session["korisnik"];
+
+            Lokacija lokacija = Global.Vozaci[vozac.KorisnickoIme].Lokacija;
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(lokacija, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
         [HttpGet, Route("api/Driver/GetDriverRides")]
         public IHttpActionResult GetDriverRides()
         {
@@ -24,8 +42,9 @@ namespace TaxiSluzba.Controllers
 
             foreach (var voznja in Global.Voznje.Values)
             {
-                if (voznja.Vozac.KorisnickoIme == vozac.KorisnickoIme)
-                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
+                if (voznja.Vozac != null)
+                    if (voznja.Vozac.KorisnickoIme == vozac.KorisnickoIme)
+                        voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
@@ -47,6 +66,7 @@ namespace TaxiSluzba.Controllers
             Korisnik vozac = (Korisnik)HttpContext.Current.Session["korisnik"];
 
             Global.Vozaci[vozac.KorisnickoIme].Lokacija = location;
+            Global.RewriteAllTxt();
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(location, new JsonSerializerSettings()
             {
@@ -61,12 +81,13 @@ namespace TaxiSluzba.Controllers
         public IHttpActionResult GetUnassignedRides()
         {
             IHttpActionResult response;
-
+            Korisnik vozac = (Korisnik)HttpContext.Current.Session["korisnik"];
+            TipVozila tip = Global.Vozaci[vozac.KorisnickoIme].Automobil.Tip;
             List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
-                if (voznja.StatusVoznje == Status.KREIRANA_NA_CEKANJU)
+                if (voznja.StatusVoznje == Status.KREIRANA_NA_CEKANJU && (voznja.ZeljeniTipVozila == tip || voznja.ZeljeniTipVozila == TipVozila.NEBITNO))
                     voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
@@ -89,8 +110,9 @@ namespace TaxiSluzba.Controllers
 
             foreach (var voznja in Global.Voznje.Values)
             {
-                if (voznja.Vozac.KorisnickoIme == vozac.KorisnickoIme)
-                    voznje.Add(voznja);
+                if (voznja.Vozac != null)
+                    if (voznja.Vozac.KorisnickoIme == vozac.KorisnickoIme)
+                        voznje.Add(voznja);
             }
 
             List<Voznja> aktivneVoznje = new List<Voznja>();
@@ -137,19 +159,36 @@ namespace TaxiSluzba.Controllers
         [HttpPut, Route("api/Driver/RideCanceled")]
         public IHttpActionResult RideCanceled(HttpRequestMessage value)
         {
-            IHttpActionResult response;
-            var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
-            
-            string vremeVoznje = data["VremeVoznje"].ToString();
-            Komentar k = new Komentar();
-            k.KomentarisanaVoznja = Global.Voznje[vremeVoznje];
-            k.Opis = data["Komentar"].ToString();
-            k.VlasnikKomentara = (Korisnik)HttpContext.Current.Session["korisnik"];
-            k.DatumObjave = DateTime.Now.Date;
+            //IHttpActionResult response;
+            //var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
 
-            Global.Voznje[vremeVoznje].StatusVoznje = Status.NEUSPESNA;
-            Global.Voznje[vremeVoznje].Komentari.Add(k);
-            Global.RewriteAllTxt();
+            //string vremeVoznje = data["VremeVoznje"].ToString();
+            //Komentar k = new Komentar();
+            //k.KomentarisanaVoznja = Global.Voznje[vremeVoznje];
+            //k.Opis = data["Komentar"].ToString();
+            //k.VlasnikKomentara = (Korisnik)HttpContext.Current.Session["korisnik"];
+            //k.DatumObjave = DateTime.Now.Date;
+
+            //Global.Voznje[vremeVoznje].StatusVoznje = Status.NEUSPESNA;
+            //Global.Voznje[vremeVoznje].Komentari.Add(k);
+            //Global.RewriteAllTxt();
+            //response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
+            //{
+            //    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            //    Formatting = Formatting.Indented,
+
+            //})));
+
+            //return response;
+
+            IHttpActionResult response;
+
+            var jo = JObject.Parse(value.Content.ReadAsStringAsync().Result);
+            var voznja = jo["Voznja"].ToString();
+
+            HttpContext.Current.Session["voznja"] = Global.Voznje[voznja];
+            HttpContext.Current.Session["commentType"] = "cancelDriver";
+
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,

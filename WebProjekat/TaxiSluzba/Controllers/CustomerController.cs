@@ -68,6 +68,37 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
+        [HttpGet, Route("api/Customer/GetFinishedCustomerRides")]
+        public IHttpActionResult GetFinishedCustomerRides()
+        {
+            IHttpActionResult response;
+
+            Korisnik musterija = (Korisnik)HttpContext.Current.Session["korisnik"];
+            List<Voznja> voznje = new List<Voznja>();
+
+            foreach (var voznja in Global.Voznje.Values)
+            {
+                if (voznja.Musterija.KorisnickoIme == musterija.KorisnickoIme)
+                    voznje.Add(voznja);
+            }
+
+            List<string> zavrseneVoznje = new List<string>();
+
+            foreach (var voznja in voznje)
+            {
+                if (voznja.StatusVoznje == Status.USPESNA || voznja.StatusVoznje == Status.NEUSPESNA)
+                    zavrseneVoznje.Add(voznja.VremePorudzbine.Ticks.ToString());
+            }
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(zavrseneVoznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
         [HttpPost, Route("api/Customer/CreateRide")]
         public IHttpActionResult CreateRide(HttpRequestMessage value)
         {
@@ -138,7 +169,28 @@ namespace TaxiSluzba.Controllers
             var voznja = jo["Voznja"].ToString();
 
             HttpContext.Current.Session["voznja"] = Global.Voznje[voznja];
-            HttpContext.Current.Session["commentType"] = "cancel";
+            HttpContext.Current.Session["commentType"] = "cancelCustomer";
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented,
+
+            })));
+
+            return response;
+        }
+
+        [HttpPut, Route("api/Customer/ComentRide")]
+        public IHttpActionResult CommentRide(HttpRequestMessage value)
+        {
+            IHttpActionResult response;
+
+            var jo = JObject.Parse(value.Content.ReadAsStringAsync().Result);
+            var voznja = jo["Voznja"].ToString();
+
+            HttpContext.Current.Session["voznja"] = Global.Voznje[voznja];
+            HttpContext.Current.Session["commentType"] = "commentCustomer";
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject("Vožnja završena", new JsonSerializerSettings()
             {

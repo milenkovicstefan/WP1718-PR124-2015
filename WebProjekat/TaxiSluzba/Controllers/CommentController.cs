@@ -33,10 +33,21 @@ namespace TaxiSluzba.Controllers
             komentar.KomentarisanaVoznja = Global.Voznje[voznja.VremePorudzbine.Ticks.ToString()];
             komentar.Ocena = ocena;
             komentar.Opis = opis;
-            if (commType.Equals("cancel"))
+            if (commType.Equals("cancelCustomer"))
             {
                 Global.Voznje[voznja.VremePorudzbine.Ticks.ToString()].Komentari.Add(komentar);
                 Global.Voznje[voznja.VremePorudzbine.Ticks.ToString()].StatusVoznje = Status.OTKAZANA;
+                Global.RewriteAllTxt();
+            }
+            else if (commType.Equals("cancelDriver"))
+            {
+                Global.Voznje[voznja.VremePorudzbine.Ticks.ToString()].Komentari.Add(komentar);
+                Global.Voznje[voznja.VremePorudzbine.Ticks.ToString()].StatusVoznje = Status.NEUSPESNA;
+                Global.RewriteAllTxt();
+            }
+            else if (commType.Equals("commentCustomer"))
+            {
+                Global.Voznje[voznja.VremePorudzbine.Ticks.ToString()].Komentari.Add(komentar);
                 Global.RewriteAllTxt();
             }
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(komentar, new JsonSerializerSettings()
