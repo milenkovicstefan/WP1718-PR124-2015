@@ -1,9 +1,11 @@
-﻿<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
-<script src="~/Scripts/jquery.validate.js"></script>
+﻿<script type="text/javascript" src="~/Scripts/jquery-1.12.4.min.js"></script>
+<script src="/scripts/jquery.validate.js"></script>
 
 <head>
     <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="~/Scripts/jquery-ui.min.css">
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
 
     <style>
@@ -236,7 +238,37 @@
                 </div>
                 <button class="accordion">Pretražite vožnju</button>
                 <div class="panel">
-                    <p>a</p>
+                    <form id="prikaziVoznje">
+                        Datum:
+                        <input name="datumOd" id="datumOd" style="width:130px"> - <input name="datumDo" id="datumDo" style="width:130px">
+                        <br />
+                        Ocena:
+                        <select name="ocenaOd" id="ocenaOd" style="width:130px">
+                            <option>0</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select> -
+                        <select name="ocenaOd" id="ocenaOd" style="width:130px">
+                            <option>0</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option selected>5</option>
+                        </select>
+                        <br />
+                        Cena:&nbsp&nbsp
+                        <input type="text" name="cenaOd" id="cenaOd" style="width:130px"> - <input name="cenaDo" id="cenaDo" style="width:130px">
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitPretraga" type="button" name="submitPretraga" value="Pronađite vožnje">
+                        <br /><br />
+                        Pronađene vožnje:
+                        <br />
+                        <select name="pronadjeneVoznje" id="pronadjeneVoznje" size="5" style="width:350px"></select>
+                    </form>
                 </div>
                 <button class="accordion">Blokirajte korisnike</button>
                 <div class="panel">
@@ -257,6 +289,15 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(function () {
+            $("#datumOd").datepicker();
+            $("#datumOd").datepicker("setDate", "01/01/2018");
+            $("#datumDo").datepicker();
+            $("#datumDo").datepicker("setDate", +1);
+        });
+    </script>
 
     <script type="text/javascript">
 

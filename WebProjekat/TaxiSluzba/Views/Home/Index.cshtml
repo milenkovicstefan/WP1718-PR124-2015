@@ -1,6 +1,5 @@
-﻿
-<script type="text/javascript" src="/scripts/jquery-1.10.2.min.js"></script>
-<script src="~/Scripts/jquery.validate.js"></script>
+﻿<script type="text/javascript" src="/scripts/jquery-1.12.4.min.js"></script>
+<script src="/scripts/jquery.validate.js"></script>
 <head>
     <link rel="stylesheet" type="text/css" href="~/Content/CustomStyle.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -102,27 +101,27 @@
     </div>
 
     <script>
-        
-            $.ajax({
-                type: 'GET',
-                url: '/api/Login',
-                success: function (data) {
-                    var object = JSON.parse(data);
-                    if (object != null) {
-                        localStorage.setItem("session", data);
-                        if (object.Uloga == 0) {
-                            window.location.href = '/Home/Admin';
-                        }
-                        else if (object.Uloga == 1) {
-                            window.location.href = '/Home/Driver';
-                        }
-                        else if (object.Uloga == 2) {
-                            window.location.href = '/Home/Customer';
-                        }
+
+        $.ajax({
+            type: 'GET',
+            url: '/api/Login',
+            success: function (data) {
+                var object = JSON.parse(data);
+                if (object != null) {
+                    localStorage.setItem("session", data);
+                    if (object.Uloga == 0) {
+                        window.location.href = '/Home/Admin';
                     }
-                },
-            });
-            $(function () {
+                    else if (object.Uloga == 1) {
+                        window.location.href = '/Home/Driver';
+                    }
+                    else if (object.Uloga == 2) {
+                        window.location.href = '/Home/Customer';
+                    }
+                }
+            },
+        });
+        $(function () {
             $('#submitLogin').on('click', function () {
                 var user = {
                     KorisnickoIme: $('#korisnickoLogin').val(),
