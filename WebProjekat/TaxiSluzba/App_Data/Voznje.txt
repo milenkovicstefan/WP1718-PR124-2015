@@ -1,6 +1,6 @@
 {
   "$id": "1",
-  "VremePorudzbine": "2019-01-07T23:27:08.8309912+01:00",
+  "VremePorudzbine": "2019-01-11T23:55:32.5793467+01:00",
   "PocetnaLokacija": {
     "$id": "2",
     "KoordinataX": 45.2424025,
@@ -18,18 +18,18 @@
     "$id": "4",
     "KorisnickoIme": "mile",
     "Lozinka": "123",
-    "Ime": "Stefan",
-    "Prezime": "Milenkovic",
+    "Ime": "mile",
+    "Prezime": "brat",
     "Pol": 0,
-    "KontaktTelefon": "0677019297",
-    "Email": "stefan.m@uns.ac.rs",
+    "KontaktTelefon": "9865",
+    "Email": "mile@mail.com",
     "Uloga": 2,
     "Voznje": [
       {
         "$ref": "1"
       }
     ],
-    "Jmbg": "2204996762035"
+    "Jmbg": "1235865"
   },
   "Odrediste": null,
   "Dispecer": null,
@@ -39,15 +39,103 @@
   "Komentari": [
     {
       "$id": "5",
-      "Opis": "test",
-      "DatumObjave": "2019-01-07T23:27:21.952235+01:00",
+      "Opis": "sdgfhjh",
+      "DatumObjave": "2019-01-11T23:55:58.785828+01:00",
       "VlasnikKomentara": {
-        "$ref": "4"
+        "$id": "6",
+        "KorisnickoIme": "mile",
+        "Lozinka": "123",
+        "Ime": "mile",
+        "Prezime": "brat",
+        "Pol": 0,
+        "KontaktTelefon": "9865",
+        "Email": "mile@mail.com",
+        "Uloga": 2,
+        "Voznje": [],
+        "Jmbg": "1235865"
       },
       "KomentarisanaVoznja": {
         "$ref": "1"
       },
-      "Ocena": 1
+      "Ocena": 2
     }
   ]
+}###
+{
+  "$id": "1",
+  "VremePorudzbine": "2019-01-12T22:37:12.9418918+01:00",
+  "PocetnaLokacija": {
+    "$id": "2",
+    "KoordinataX": 45.2424025,
+    "KoordinataY": 19.8431302924445,
+    "Adresa": {
+      "$id": "3",
+      "Ulica": "Bulevar oslobodjenja",
+      "Broj": 133,
+      "Mesto": "Novi Sad",
+      "PostanskiBroj": 21000
+    }
+  },
+  "ZeljeniTipVozila": 2,
+  "Musterija": null,
+  "Odrediste": null,
+  "Dispecer": {
+    "$id": "4",
+    "KorisnickoIme": "dispecer1",
+    "Lozinka": "dispecer1",
+    "Ime": "Pera",
+    "Prezime": "Peric",
+    "Pol": 0,
+    "KontaktTelefon": "0676543210",
+    "Email": "dispecer1@mail.com",
+    "Uloga": 0,
+    "Voznje": [
+      {
+        "$ref": "1"
+      }
+    ],
+    "Jmbg": "0101975762035"
+  },
+  "Iznos": 0.0,
+  "StatusVoznje": 2,
+  "Vozac": {
+    "$id": "5",
+    "Lokacija": {
+      "$id": "6",
+      "KoordinataX": 45.24239,
+      "KoordinataY": 19.8426221,
+      "Adresa": {
+        "$id": "7",
+        "Ulica": "Bulevar oslobodjenja",
+        "Broj": 131,
+        "Mesto": "Novi Sad",
+        "PostanskiBroj": 21000
+      }
+    },
+    "Automobil": {
+      "$id": "8",
+      "Vozac": {
+        "$ref": "5"
+      },
+      "Godiste": 2015,
+      "RegistarskaOznaka": "po888op",
+      "TaxiOznaka": "T005",
+      "Tip": 1
+    },
+    "KorisnickoIme": "dasfd",
+    "Lozinka": "dvbf",
+    "Ime": "gjvhbkj",
+    "Prezime": "hkj",
+    "Pol": 0,
+    "KontaktTelefon": "651",
+    "Email": "v@m.com",
+    "Uloga": 1,
+    "Voznje": [
+      {
+        "$ref": "1"
+      }
+    ],
+    "Jmbg": "65132"
+  },
+  "Komentari": []
 }###

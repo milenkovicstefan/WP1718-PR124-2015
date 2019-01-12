@@ -2,14 +2,14 @@
   "$id": "1",
   "Lokacija": {
     "$id": "2",
-    "KoordinataX": 45.2548912,
-    "KoordinataY": 19.838387,
+    "KoordinataX": 45.24239,
+    "KoordinataY": 19.8426221,
     "Adresa": {
       "$id": "3",
-      "Ulica": "Pavla Papa",
-      "Broj": 19,
+      "Ulica": "Bulevar oslobodjenja",
+      "Broj": 131,
       "Mesto": "Novi Sad",
-      "PostanskiBroj": 21101
+      "PostanskiBroj": 21000
     }
   },
   "Automobil": {
@@ -17,19 +17,62 @@
     "Vozac": {
       "$ref": "1"
     },
-    "Godiste": 2009,
-    "RegistarskaOznaka": "NS007KO",
-    "TaxiOznaka": "T001",
+    "Godiste": 2015,
+    "RegistarskaOznaka": "po888op",
+    "TaxiOznaka": "T005",
     "Tip": 1
   },
-  "KorisnickoIme": "vozac",
-  "Lozinka": "123",
-  "Ime": "Voki",
-  "Prezime": "Vokic",
+  "KorisnickoIme": "dasfd",
+  "Lozinka": "dvbf",
+  "Ime": "gjvhbkj",
+  "Prezime": "hkj",
   "Pol": 0,
-  "KontaktTelefon": "659865",
-  "Email": "vozac@mail.com",
+  "KontaktTelefon": "651",
+  "Email": "v@m.com",
   "Uloga": 1,
-  "Voznje": [],
-  "Jmbg": "1236"
+  "Voznje": [
+    {
+      "$id": "5",
+      "VremePorudzbine": "2019-01-12T22:37:12.9418918+01:00",
+      "PocetnaLokacija": {
+        "$id": "6",
+        "KoordinataX": 45.2424025,
+        "KoordinataY": 19.8431302924445,
+        "Adresa": {
+          "$id": "7",
+          "Ulica": "Bulevar oslobodjenja",
+          "Broj": 133,
+          "Mesto": "Novi Sad",
+          "PostanskiBroj": 21000
+        }
+      },
+      "ZeljeniTipVozila": 2,
+      "Musterija": null,
+      "Odrediste": null,
+      "Dispecer": {
+        "$id": "8",
+        "KorisnickoIme": "dispecer1",
+        "Lozinka": "dispecer1",
+        "Ime": "Pera",
+        "Prezime": "Peric",
+        "Pol": 0,
+        "KontaktTelefon": "0676543210",
+        "Email": "dispecer1@mail.com",
+        "Uloga": 0,
+        "Voznje": [
+          {
+            "$ref": "5"
+          }
+        ],
+        "Jmbg": "0101975762035"
+      },
+      "Iznos": 0.0,
+      "StatusVoznje": 2,
+      "Vozac": {
+        "$ref": "1"
+      },
+      "Komentari": []
+    }
+  ],
+  "Jmbg": "65132"
 }###

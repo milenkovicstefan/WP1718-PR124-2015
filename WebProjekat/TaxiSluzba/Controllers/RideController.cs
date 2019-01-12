@@ -18,9 +18,9 @@ namespace TaxiSluzba.Controllers
         [HttpGet]
         public IHttpActionResult Get()
         {
-            Voznja v = (Voznja)HttpContext.Current.Session["voznja"];
+            var v = HttpContext.Current.Session["voznja"].ToString();
 
-            IHttpActionResult response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+            IHttpActionResult response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Voznje[v], new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Formatting = Formatting.Indented
@@ -37,8 +37,8 @@ namespace TaxiSluzba.Controllers
 
             var jo = JObject.Parse(value.Content.ReadAsStringAsync().Result);
             var voznja = jo["Voznja"].ToString();
-            
-                HttpContext.Current.Session["voznja"] = Global.Voznje[voznja];
+
+            HttpContext.Current.Session["voznja"] = voznja;
                 response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(Global.Voznje[voznja], new JsonSerializerSettings()
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects,

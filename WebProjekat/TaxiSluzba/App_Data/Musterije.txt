@@ -2,16 +2,16 @@
   "$id": "1",
   "KorisnickoIme": "mile",
   "Lozinka": "123",
-  "Ime": "Stefan",
-  "Prezime": "Milenkovic",
+  "Ime": "mile",
+  "Prezime": "brat",
   "Pol": 0,
-  "KontaktTelefon": "0677019297",
-  "Email": "stefan.m@uns.ac.rs",
+  "KontaktTelefon": "9865",
+  "Email": "mile@mail.com",
   "Uloga": 2,
   "Voznje": [
     {
       "$id": "2",
-      "VremePorudzbine": "2019-01-07T23:27:08.8309912+01:00",
+      "VremePorudzbine": "2019-01-11T23:55:32.5793467+01:00",
       "PocetnaLokacija": {
         "$id": "3",
         "KoordinataX": 45.2424025,
@@ -36,18 +36,28 @@
       "Komentari": [
         {
           "$id": "5",
-          "Opis": "test",
-          "DatumObjave": "2019-01-07T23:27:21.952235+01:00",
+          "Opis": "sdgfhjh",
+          "DatumObjave": "2019-01-11T23:55:58.785828+01:00",
           "VlasnikKomentara": {
-            "$ref": "1"
+            "$id": "6",
+            "KorisnickoIme": "mile",
+            "Lozinka": "123",
+            "Ime": "mile",
+            "Prezime": "brat",
+            "Pol": 0,
+            "KontaktTelefon": "9865",
+            "Email": "mile@mail.com",
+            "Uloga": 2,
+            "Voznje": [],
+            "Jmbg": "1235865"
           },
           "KomentarisanaVoznja": {
             "$ref": "2"
           },
-          "Ocena": 1
+          "Ocena": 2
         }
       ]
     }
   ],
-  "Jmbg": "2204996762035"
+  "Jmbg": "1235865"
 }###

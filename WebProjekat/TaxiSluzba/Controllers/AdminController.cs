@@ -57,19 +57,87 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
-        [HttpGet, Route("api/Admin/GetAdminRides")]
-        public IHttpActionResult GetAdminRides()
+        [HttpPost, Route("api/Admin/Search")]
+        public IHttpActionResult Search(HttpRequestMessage value)
         {
             IHttpActionResult response;
 
-            Korisnik admin = (Korisnik)HttpContext.Current.Session["korisnik"];
+            var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
+            DateTime datumOd = new DateTime();
+            DateTime datumDo = new DateTime();
+            int ocenaOd;
+            int ocenaDo;
+            double cenaOd;
+            double cenaDo;
+            string vozacIme = string.Empty;
+            string vozacPrezime = string.Empty;
+            string musterijaIme = string.Empty;
+            string musterijaPrezime = string.Empty;
+
+            bool datum1 = DateTime.TryParse(data["DatumOd"].ToString(), out datumOd);
+            bool datum2 = DateTime.TryParse(data["DatumDo"].ToString(), out datumDo);
+            bool ocena1 = Int32.TryParse(data["OcenaOd"].ToString(), out ocenaOd);
+            bool ocena2 = Int32.TryParse(data["OcenaDo"].ToString(), out ocenaDo);
+            bool cena1 = double.TryParse(data["CenaOd"].ToString(), out cenaOd);
+            bool cena2 = double.TryParse(data["CenaDo"].ToString(), out cenaDo);
+            bool vozac1 = !string.IsNullOrWhiteSpace(data["VozacIme"].ToString());
+            bool vozac2 = !string.IsNullOrWhiteSpace(data["VozacPrezime"].ToString());
+            bool musterija1 = !string.IsNullOrWhiteSpace(data["MusterijaIme"].ToString());
+            bool musterija2 = !string.IsNullOrWhiteSpace(data["MusterijaPrezime"].ToString());
+
+            if (vozac1)
+                vozacIme = data["VozacIme"].ToString();
+            if (vozac2)
+                vozacIme = data["VozacPrezime"].ToString();
+            if (musterija1)
+                vozacIme = data["MusterijaIme"].ToString();
+            if (musterija2)
+                vozacIme = data["MusterijaPrezime"].ToString();
+
             List<string> voznje = new List<string>();
 
             foreach (var voznja in Global.Voznje.Values)
             {
-                if (voznja.Dispecer != null)
-                if (voznja.Dispecer.KorisnickoIme == admin.KorisnickoIme)
-                    voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
+                if (datum1)
+                    if (voznja.VremePorudzbine < datumOd)
+                        continue;
+                if (datum2)
+                    if (voznja.VremePorudzbine > datumDo)
+                        continue;
+                if (ocena1)
+                    if (voznja.Komentari.Any(o => (int)o.Ocena != 0 && (int)o.Ocena < ocenaOd))
+                        continue;
+                if (ocena2)
+                    if (voznja.Komentari.Any(o => (int)o.Ocena != 0 && (int)o.Ocena > ocenaDo))
+                        continue;
+                if (cena1)
+                    if (voznja.Iznos < cenaOd)
+                        continue;
+                if (cena2)
+                    if (voznja.Iznos > cenaDo)
+                        continue;
+                if (vozac1)
+                    if (voznja.Vozac == null)
+                        continue;
+                    else if (!voznja.Vozac.Ime.Equals(vozacIme))
+                        continue;
+                if (vozac2)
+                    if (voznja.Vozac == null)
+                        continue;
+                    else if (!voznja.Vozac.Prezime.Equals(vozacPrezime))
+                        continue;
+                if (musterija1)
+                    if (voznja.Musterija == null)
+                        continue;
+                    else if (!voznja.Musterija.Ime.Equals(musterijaIme))
+                        continue;
+                if (musterija2)
+                    if (voznja.Musterija == null)
+                        continue;
+                    else if (!voznja.Musterija.Prezime.Equals(musterijaPrezime))
+                        continue;
+
+                voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
@@ -114,6 +182,31 @@ namespace TaxiSluzba.Controllers
             foreach (var voznja in Global.Voznje.Keys)
             {
                 voznje.Add(voznja);
+            }
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
+        [HttpGet, Route("api/Admin/GetAdminRides")]
+        public IHttpActionResult GetAdminRides()
+        {
+            IHttpActionResult response;
+
+            Korisnik dispecer = (Korisnik)HttpContext.Current.Session["korisnik"];
+
+            List<string> voznje = new List<string>();
+
+            foreach (var voznja in Global.Voznje.Values)
+            {
+                if (voznja.Dispecer != null)
+                    if (voznja.Dispecer.KorisnickoIme.Equals(dispecer.KorisnickoIme))
+                        voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
             }
 
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()

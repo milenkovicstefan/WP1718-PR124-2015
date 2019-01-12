@@ -66,8 +66,8 @@
                     <td colspan="2" width="300"><input size="43" id="iznos" type="text" name="iznos" disabled></td>
                 </tr>
                 <tr>
-                    <td>Komentari: </td>
-                    <td colspan="2" width="300"><input size="43" id="komentari" type="text" name="komentari" disabled></td>
+                    <td valign="top">Komentari: </td>
+                    <td colspan="2" width="300" height="7em" valign="top"><input size="43" style="height:7em;" id="komentari" type="text" name="komentari" disabled></td>
                 </tr>
                 <tr>
                     <td>Status vožnje: </td>
@@ -104,8 +104,24 @@
                             $('#vozac').val(object.Vozac.KorisnickoIme);
                         if (object.Iznos != null)
                             $('#iznos').val(object.Iznos);
-                        if (object.Komentari != null)
-                            $('#komentari').val(object.Komentari);
+                        if (object.Komentari != null) {
+                            var komentari = "";
+                            for (var komentar in object.Komentari) {
+                                komentari += "\n";
+                                komentari += "Korisnik: ";
+                                komentari += komentar.VlasnikKomentara.KorisnickoIme;
+                                komentari += "\n\n";
+                                komentari += komentar.Opis;
+                                komentari += "\n\n";
+                                komentari += "Ocena: ";
+                                komentari += komentar.Ocena;
+                                komentari += "\n";
+                                komentari += "Vreme objave: ";
+                                komentari += komentar.DatumObjave;
+                                komentari += "\n";
+                            }
+                            $('#komentari').val(komentari);
+                        }
                         if (object.StatusVoznje != null)
                             $('#status').val(JSON.stringify(object.StatusVoznje));
                     }

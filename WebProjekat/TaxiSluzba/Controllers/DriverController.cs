@@ -100,6 +100,65 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
+        [HttpPost, Route("api/Driver/Search")]
+        public IHttpActionResult Search(HttpRequestMessage value)
+        {
+            IHttpActionResult response;
+
+            var data = JObject.Parse(value.Content.ReadAsStringAsync().Result);
+            DateTime datumOd = new DateTime();
+            DateTime datumDo = new DateTime();
+            int ocenaOd;
+            int ocenaDo;
+            double cenaOd;
+            double cenaDo;
+            string vozacIme = string.Empty;
+            string vozacPrezime = string.Empty;
+            string musterijaIme = string.Empty;
+            string musterijaPrezime = string.Empty;
+
+            bool datum1 = DateTime.TryParse(data["DatumOd"].ToString(), out datumOd);
+            bool datum2 = DateTime.TryParse(data["DatumDo"].ToString(), out datumDo);
+            bool ocena1 = Int32.TryParse(data["OcenaOd"].ToString(), out ocenaOd);
+            bool ocena2 = Int32.TryParse(data["OcenaDo"].ToString(), out ocenaDo);
+            bool cena1 = double.TryParse(data["CenaOd"].ToString(), out cenaOd);
+            bool cena2 = double.TryParse(data["CenaDo"].ToString(), out cenaDo);
+
+            List<string> voznje = new List<string>();
+
+            foreach (var voznja in Global.Voznje.Values)
+            {
+                if (datum1)
+                    if (voznja.VremePorudzbine < datumOd)
+                        continue;
+                if (datum2)
+                    if (voznja.VremePorudzbine > datumDo)
+                        continue;
+                if (ocena1)
+                    if (voznja.Komentari.Any(o => (int)o.Ocena != 0 && (int)o.Ocena < ocenaOd))
+                        continue;
+                if (ocena2)
+                    if (voznja.Komentari.Any(o => (int)o.Ocena != 0 && (int)o.Ocena > ocenaDo))
+                        continue;
+                if (cena1)
+                    if (voznja.Iznos < cenaOd)
+                        continue;
+                if (cena2)
+                    if (voznja.Iznos > cenaDo)
+                        continue;
+
+                voznje.Add(voznja.VremePorudzbine.Ticks.ToString());
+            }
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(voznje, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
         [HttpGet, Route("api/Driver/GetActiveDriverRides")]
         public IHttpActionResult GetActiveDriverRides()
         {

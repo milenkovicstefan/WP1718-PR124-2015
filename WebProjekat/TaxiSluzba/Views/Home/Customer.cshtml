@@ -166,10 +166,10 @@
                 <button class="accordion">Pretražite vožnju</button>
                 <div class="panel">
                     <form id="prikaziVoznje">
-                        Datum:
+                        Datum:&nbsp;&ensp;&nbsp;&thinsp;
                         <input name="datumOd" id="datumOd" style="width:130px"> - <input name="datumDo" id="datumDo" style="width:130px">
                         <br />
-                        Ocena:
+                        Ocena:&nbsp;&ensp;&nbsp;&thinsp;
                         <select name="ocenaOd" id="ocenaOd" style="width:130px">
                             <option>0</option>
                             <option>1</option>
@@ -187,7 +187,7 @@
                             <option selected>5</option>
                         </select>
                         <br />
-                        Cena:&nbsp&nbsp
+                        Cena:&nbsp;&nbsp;&nbsp;&ensp;&nbsp;&thinsp;
                         <input type="text" name="cenaOd" id="cenaOd" style="width:130px"> - <input name="cenaDo" id="cenaDo" style="width:130px">
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitPretraga" type="button" name="submitPretraga" value="Pronađite vožnje">
@@ -195,6 +195,8 @@
                         Pronađene vožnje:
                         <br />
                         <select name="pronadjeneVoznje" id="pronadjeneVoznje" size="5" style="width:350px"></select>
+                        <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitPrikaz" type="button" name="submitPrikaz" value="Informacije o vožnji">
                     </form>
                 </div>
                 <button class="accordion">Ostavite komentar</button>
@@ -247,6 +249,29 @@
 
             var ride = {
                 Voznja: $('#voznje').val(),
+            };
+
+            var JSONObj = JSON.stringify(ride);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Ride',
+                data: JSONObj,
+                success: function (data) {
+
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            window.location.href = '/Home/RideInfo';
+        });
+
+        $('#submitPrikaz').on('click', function () {
+
+            var ride = {
+                Voznja: $('#pronadjeneVoznje').val(),
             };
 
             var JSONObj = JSON.stringify(ride);
@@ -429,6 +454,37 @@
             });
 
         })
+
+        $('#submitPretraga').on('click', function () {
+
+            var parameters = {
+                DatumOd: $('#datumOd').val(),
+                DatumDo: $('#datumDo').val(),
+                OcenaOd: $('#ocenaOd').val(),
+                OcenaDo: $('#ocenaDo').val(),
+                CenaOd: $('#cenaOd').val(),
+                CenaDo: $('#cenaDo').val(),
+            };
+            $("#pronadjeneVoznje").empty();
+            var JSONObj = JSON.stringify(parameters);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Customer/Search',
+                data: JSONObj,
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#pronadjeneVoznje").append('<option>' + array[i] + '</option>');
+                        }
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
     </script>
 
     <script>
