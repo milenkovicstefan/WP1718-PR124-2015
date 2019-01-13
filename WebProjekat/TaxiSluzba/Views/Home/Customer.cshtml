@@ -158,6 +158,21 @@
                 <button class="accordion">Prikažite vožnje</button>
                 <div class="panel">
                     <form id="prikaziVoznje">
+                        Status vožnje:
+                        <select name="status" id="status">
+                            <option>Kreirana - na čekanju</option>
+                            <option>Otkazana</option>
+                            <option>Formirana</option>
+                            <option>Obrađena</option>
+                            <option>Prihvaćena</option>
+                            <option>Neuspešna</option>
+                            <option>Uspešna</option>
+                            <option selected>Nebitno</option>
+                        </select><br />
+                        Sortiranje:
+                        <input type="radio" name="sort" id="sort" value="0"> Bez sortiranja
+                        <input type="radio" name="sort" id="sort" value="1"> Datum
+                        <input type="radio" name="sort" id="sort" value="2"> Ocena<br />
                         <select name="voznje" id="voznje" size="5" style="width:350px"></select>
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitPrikaziVoznju" type="button" name="submitPrikaziVoznju" value="Informacije o vožnji">
