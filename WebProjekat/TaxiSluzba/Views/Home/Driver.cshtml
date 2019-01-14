@@ -219,6 +219,80 @@
     </div>
 
     <script>
+        $('#status').change(function () {
+            var parameters = {
+                Filter: $('#status').val(),
+                Sort: $('input[name="sort"]:checked').val(),
+                AllRides: 0
+            };
+
+            var JSONObj = JSON.stringify(parameters);
+
+            console.log(JSONObj);
+
+            $("#voznje").empty();
+            $.ajax({
+                type: 'POST',
+                url: 'api/FilterAndSort',
+                data: JSONObj,
+                success: function (data) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/api/Admin/FilterAndSort',
+                        success: function (data) {
+                            var array = JSON.parse(data);
+                            if (array != null) {
+                                for (var i in array) {
+                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                }
+                            }
+                        },
+                    });
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        });
+
+        $('input[name="sort"]').change(function () {
+            var parameters = {
+                Filter: $('#status').val(),
+                Sort: $('input[name="sort"]:checked').val(),
+                AllRides: 0
+            };
+
+            var JSONObj = JSON.stringify(parameters);
+
+            console.log(JSONObj);
+
+            $("#voznje").empty();
+            $.ajax({
+                type: 'POST',
+                url: 'api/FilterAndSort',
+                data: JSONObj,
+                success: function (data) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/api/Admin/FilterAndSort',
+                        success: function (data) {
+                            var array = JSON.parse(data);
+                            if (array != null) {
+                                for (var i in array) {
+                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                }
+                            }
+                        },
+                    });
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+    </script>
+
+    <script>
         $(function () {
             $("#datumOd").datepicker();
             $("#datumOd").datepicker("setDate", "01/01/2018");

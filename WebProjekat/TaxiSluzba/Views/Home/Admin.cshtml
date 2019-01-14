@@ -177,7 +177,8 @@
                             </tr>
                             <tr>
                                 <td>Tip automobila: </td>
-                                <td><select name="tip" id="tip">
+                                <td>
+                                    <select name="tip" id="tip">
                                         <option>Nebitno</option>
                                         <option>Putničko</option>
                                         <option>Kombi</option>
@@ -231,22 +232,22 @@
                     <form id="prikaziVoznje">
                         Status vožnje:
                         <select name="status" id="status">
-                            <option>Kreirana - na čekanju</option>
-                            <option>Otkazana</option>
-                            <option>Formirana</option>
-                            <option>Obrađena</option>
-                            <option>Prihvaćena</option>
-                            <option>Neuspešna</option>
-                            <option>Uspešna</option>
-                            <option selected>Nebitno</option>
+                            <option value="0">Kreirana - na čekanju</option>
+                            <option value="1">Otkazana</option>
+                            <option value="2">Formirana</option>
+                            <option value="3">Obrađena</option>
+                            <option value="4">Prihvaćena</option>
+                            <option value="5">Neuspešna</option>
+                            <option value="6">Uspešna</option>
+                            <option value="7" selected>Nebitno</option>
                         </select><br />
                         Sortiranje:
-                        <input checked type="radio" name="sort" id="sort" value="0"> Bez sortiranja
-                        <input type="radio" name="sort" id="sort" value="1"> Datum
-                        <input type="radio" name="sort" id="sort" value="2"> Ocena<br />
+                        <input checked type="radio" name="sort" value="0"> Bez sortiranja
+                        <input type="radio" name="sort" value="1"> Datum
+                        <input type="radio" name="sort" value="2"> Ocena<br />
                         <select name="voznje" id="voznje" size="5" style="width:350px"></select>
                         <br />
-                        <input id="sveVoznje" name="sveVoznje" type="checkbox" /> Sve vožnje
+                        <input id="sveVoznje" name="sveVoznje" type="checkbox" value="1"/> Sve vožnje
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitPrikaziVoznju" type="button" name="submitPrikaziVoznju" value="Informacije o vožnji">
                     </form>
@@ -318,6 +319,128 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $('#status').change(function () {
+            var parameters = {
+                Filter: $('#status').val(),
+                Sort: $('input[name="sort"]:checked').val(),
+                AllRides: 0
+            };
+
+            if ($('#sveVoznje').prop('checked')) {
+                parameters.AllRides = 1
+            }
+
+            var JSONObj = JSON.stringify(parameters);
+
+            console.log(JSONObj);
+
+            $("#voznje").empty();
+            $.ajax({
+                type: 'POST',
+                url: 'api/FilterAndSort',
+                data: JSONObj,
+                success: function (data) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/api/Admin/FilterAndSort',
+                        success: function (data) {
+                            var array = JSON.parse(data);
+                            if (array != null) {
+                                for (var i in array) {
+                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                }
+                            }
+                        },
+                    });
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        });
+
+        $('input[name="sort"]').change (function () {
+            var parameters = {
+                Filter: $('#status').val(),
+                Sort: $('input[name="sort"]:checked').val(),
+                AllRides: 0
+            };
+
+            if ($('#sveVoznje').prop('checked')) {
+                parameters.AllRides = 1
+            }
+
+            var JSONObj = JSON.stringify(parameters);
+
+            console.log(JSONObj);
+
+            $("#voznje").empty();
+            $.ajax({
+                type: 'POST',
+                url: 'api/FilterAndSort',
+                data: JSONObj,
+                success: function (data) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/api/Admin/FilterAndSort',
+                        success: function (data) {
+                            var array = JSON.parse(data);
+                            if (array != null) {
+                                for (var i in array) {
+                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                }
+                            }
+                        },
+                    });
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+
+        $("#sveVoznje").change(function () {
+            var parameters = {
+                Filter: $('#status').val(),
+                Sort: $('input[name="sort"]:checked').val(),
+                AllRides: 0
+            };
+
+            if ($('#sveVoznje').prop('checked')) {
+                parameters.AllRides = 1
+            }
+
+            var JSONObj = JSON.stringify(parameters);
+
+            console.log(JSONObj);
+
+            $("#voznje").empty();
+            $.ajax({
+                type: 'POST',
+                url: 'api/FilterAndSort',
+                data: JSONObj,
+                success: function (data) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/api/Admin/FilterAndSort',
+                        success: function (data) {
+                            var array = JSON.parse(data);
+                            if (array != null) {
+                                for (var i in array) {
+                                    $("#voznje").append('<option>' + array[i] + '</option>');
+                                }
+                            }
+                        },
+                    });
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        });
+    </script>
 
     <script>
         $(function () {
@@ -726,43 +849,6 @@
                         }
                     }
                 },
-            });
-        })
-    </script>
-
-    <script>
-        $(function () {
-            $("#sveVoznje").change(function () {
-                $('#voznje').children().remove();
-                if ($('input.sveVoznje').is(':checked')) {
-                    $.ajax({
-                        type: 'GET',
-                        url: '/api/Admin/GetAllRides',
-                        success: function (data) {
-                            var array = JSON.parse(data);
-                            if (array != null) {
-                                for (var i in array) {
-                                    $("#voznje").append('<option>' + array[i] + '</option>');
-                                }
-                            }
-                        },
-                    });
-                }
-                else {
-                    $.ajax({
-                        type: 'GET',
-                        url: '/api/Admin/GetAdminRides',
-                        success: function (data) {
-                            var array = JSON.parse(data);
-                            if (array != null) {
-                                for (var i in array) {
-                                    $("#voznje").append('<option>' + array[i] + '</option>');
-                                }
-                            }
-                        },
-                    });
-                }
-
             });
         })
     </script>

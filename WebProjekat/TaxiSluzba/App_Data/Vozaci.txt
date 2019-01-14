@@ -76,3 +76,38 @@
   ],
   "Jmbg": "65132"
 }###
+{
+  "$id": "1",
+  "Lokacija": {
+    "$id": "2",
+    "KoordinataX": 45.24239,
+    "KoordinataY": 19.8426221,
+    "Adresa": {
+      "$id": "3",
+      "Ulica": "Bulevar oslobodjenja",
+      "Broj": 131,
+      "Mesto": "Novi Sad",
+      "PostanskiBroj": 21000
+    }
+  },
+  "Automobil": {
+    "$id": "4",
+    "Vozac": {
+      "$ref": "1"
+    },
+    "Godiste": 1999,
+    "RegistarskaOznaka": "pt222ol",
+    "TaxiOznaka": "T111",
+    "Tip": 2
+  },
+  "KorisnickoIme": "kl",
+  "Lozinka": "lč",
+  "Ime": "km",
+  "Prezime": "klk",
+  "Pol": 0,
+  "KontaktTelefon": "1653",
+  "Email": "mai@mail.com",
+  "Uloga": 1,
+  "Voznje": [],
+  "Jmbg": "5613"
+}###

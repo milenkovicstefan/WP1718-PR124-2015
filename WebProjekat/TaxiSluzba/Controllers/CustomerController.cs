@@ -38,6 +38,71 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
+        [HttpGet, Route("api/Customer/FilterAndSort")]
+        public IHttpActionResult FilterAndSort()
+        {
+            IHttpActionResult response;
+
+            Korisnik musterija = (Korisnik)HttpContext.Current.Session["korisnik"];
+            var parametri = (Parametri)HttpContext.Current.Application["parametri"];
+            //var data = JObject.Parse(parametri);
+
+            List<Voznja> voznje = new List<Voznja>();
+
+            foreach (var voznja in Global.Voznje)
+            {
+
+                if (voznja.Value.Dispecer == null)
+                    continue;
+                if (!voznja.Value.Dispecer.KorisnickoIme.Equals(musterija.KorisnickoIme))
+                    continue;
+
+                if (parametri.Filter != 7)
+                    if (parametri.Filter != (int)voznja.Value.StatusVoznje)
+                        continue;
+
+                voznje.Add(voznja.Value);
+            }
+
+            List<Voznja> sortiraneVoznje = new List<Voznja>();
+
+            if (parametri.Sort == 1)
+                sortiraneVoznje = voznje.OrderBy(o => o.VremePorudzbine).ToList();
+            else if (parametri.Sort == 2)
+            {
+                Dictionary<Voznja, double> ocene = new Dictionary<Voznja, double>();
+                foreach (var voznja in voznje)
+                    if (voznja.Komentari.Any(o => (int)o.Ocena != 0))
+                    {
+                        foreach (var komentar in voznja.Komentari)
+                            if ((int)komentar.Ocena != 0)
+                                ocene.Add(voznja, (int)komentar.Ocena);
+                    }
+                    else
+                        ocene.Add(voznja, 0);
+
+                var sorted = from pair in ocene
+                             orderby pair.Value descending
+                             select pair;
+                foreach (KeyValuePair<Voznja, double> pair in sorted)
+                    sortiraneVoznje.Add(pair.Key);
+            }
+            else
+                sortiraneVoznje = voznje;
+
+            List<string> result = new List<string>();
+            foreach (var voznja in sortiraneVoznje)
+                result.Add(voznja.VremePorudzbine.Ticks.ToString());
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(result, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
         [HttpGet, Route("api/Customer/GetActiveCustomerRides")]
         public IHttpActionResult GetActiveCustomerRides()
         {
