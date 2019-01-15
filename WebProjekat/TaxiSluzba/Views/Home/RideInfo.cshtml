@@ -67,7 +67,8 @@
                 </tr>
                 <tr>
                     <td valign="top">Komentari: </td>
-                    <td colspan="2" width="300" height="7em" valign="top"><input size="43" style="height:7em;" id="komentari" type="text" name="komentari" disabled></td>
+                    <!--<td colspan="2" width="300" height="7em" valign="top"><input size="43" style="height:7em;" id="komentari" type="text" name="komentari" disabled></td>-->
+                    <td colspan="2" width="300" height="7em" valign="top"><select name="komentari" id="komentari" size="4" style="width:335px" disabled></select></td>
                 </tr>
                 <tr>
                     <td>Status vožnje: </td>
@@ -81,6 +82,24 @@
     </div>
     <script>
         $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Login',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    if (object == null) {
+                        window.location.href = '/Home/Index';
+                    }
+                },
+                statusCode: {
+                    403: function () {
+                        window.location.href = '/Home/Index';
+                        alert('Korisnik je blokiran');
+                    }
+                }
+            });
+
             $.ajax({
                 type: 'GET',
                 url: '/api/Ride',
@@ -106,24 +125,29 @@
                             $('#iznos').val(object.Iznos);
                         if (object.Komentari != null) {
                             var komentari = "";
-                            for (var komentar in object.Komentari) {
-                                komentari += "\n";
-                                komentari += "Korisnik: ";
-                                komentari += komentar.VlasnikKomentara.KorisnickoIme;
-                                komentari += "\n\n";
-                                komentari += komentar.Opis;
-                                komentari += "\n\n";
-                                komentari += "Ocena: ";
-                                komentari += komentar.Ocena;
-                                komentari += "\n";
-                                komentari += "Vreme objave: ";
-                                komentari += komentar.DatumObjave;
-                                komentari += "\n";
+                            for (var i in object.Komentari) {
+                                //komentari += "\n";
+                                //komentari += "Korisnik: ";
+                                //komentari += komentar.VlasnikKomentara;
+                                //komentari += "\n\n";
+                                //komentari += komentar.Opis;
+                                //komentari += "\n\n";
+                                //komentari += "Ocena: ";
+                                //komentari += komentar.Ocena;
+                                //komentari += "\n";
+                                //komentari += "Vreme objave: ";
+                                //komentari += komentar.DatumObjave;
+                                //komentari += "\n";
+                                $("#komentari").append('<option>Korisnik: ' + object.Komentari[i].VlasnikKomentara.KorisnickoIme + '</option>');
+                                $("#komentari").append('<option> Komentar: ' + object.Komentari[i].Opis + '</option>');
+                                $("#komentari").append('<option> Ocena: ' + object.Komentari[i].Ocena + '</option>');
+                                $("#komentari").append('<option> Vreme objave: ' + object.Komentari[i].DatumObjave + '</option>');
+                                $("#komentari").append('<option> </option>');
                             }
                             $('#komentari').val(komentari);
                         }
                         if (object.StatusVoznje != null)
-                            $('#status').val(JSON.stringify(object.StatusVoznje));
+                            $('#status').val(object.StatusVoznje);
                     }
                 },
             });

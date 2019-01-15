@@ -73,6 +73,24 @@
     <script>
 
         $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Login',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    if (object == null) {
+                        window.location.href = '/Home/Index';
+                    }
+                },
+                statusCode: {
+                    403: function () {
+                        window.location.href = '/Home/Index';
+                        alert('Korisnik je blokiran');
+                    }
+                }
+            });
+
             $.ajax({
                 type: 'GET',
                 url: '/api/Login',

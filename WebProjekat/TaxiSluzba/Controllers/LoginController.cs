@@ -21,6 +21,10 @@ namespace TaxiSluzba.Controllers
         {
             Korisnik k = (Korisnik)HttpContext.Current.Session["korisnik"];
 
+            if (k != null)
+                if (Global.Blokirani.ContainsKey(k.KorisnickoIme))
+                    return StatusCode(HttpStatusCode.Forbidden);
+
             return Ok(JsonConvert.SerializeObject(k, new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,

@@ -160,19 +160,19 @@
                     <form id="prikaziVoznje">
                         Status vožnje:
                         <select name="status" id="status">
-                            <option>Kreirana - na čekanju</option>
-                            <option>Otkazana</option>
-                            <option>Formirana</option>
-                            <option>Obrađena</option>
-                            <option>Prihvaćena</option>
-                            <option>Neuspešna</option>
-                            <option>Uspešna</option>
-                            <option selected>Nebitno</option>
+                            <option value="0">Kreirana - na čekanju</option>
+                            <option value="1">Otkazana</option>
+                            <option value="2">Formirana</option>
+                            <option value="3">Obrađena</option>
+                            <option value="4">Prihvaćena</option>
+                            <option value="5">Neuspešna</option>
+                            <option value="6">Uspešna</option>
+                            <option value="7" selected>Nebitno</option>
                         </select><br />
                         Sortiranje:
-                        <input type="radio" name="sort" id="sort" value="0"> Bez sortiranja
-                        <input type="radio" name="sort" id="sort" value="1"> Datum
-                        <input type="radio" name="sort" id="sort" value="2"> Ocena<br />
+                        <input type="radio" name="sort" value="0"> Bez sortiranja
+                        <input type="radio" name="sort" value="1"> Datum
+                        <input type="radio" name="sort" value="2"> Ocena<br />
                         <select name="voznje" id="voznje" size="5" style="width:350px"></select>
                         <br />
                         <input style="width:350px;height:40px;cursor:pointer;" id="submitPrikaziVoznju" type="button" name="submitPrikaziVoznju" value="Informacije o vožnji">
@@ -238,7 +238,7 @@
                 success: function (data) {
                     $.ajax({
                         type: 'GET',
-                        url: '/api/Admin/FilterAndSort',
+                        url: '/api/Driver/FilterAndSort',
                         success: function (data) {
                             var array = JSON.parse(data);
                             if (array != null) {
@@ -274,7 +274,7 @@
                 success: function (data) {
                     $.ajax({
                         type: 'GET',
-                        url: '/api/Admin/FilterAndSort',
+                        url: '/api/Driver/FilterAndSort',
                         success: function (data) {
                             var array = JSON.parse(data);
                             if (array != null) {
@@ -560,6 +560,35 @@
 
     <script>
         $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Login',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    if (object != null) {
+                        localStorage.setItem("session", data);
+                        if (object.Uloga == 0) {
+                            window.location.href = '/Home/Admin';
+                        }
+                        else if (object.Uloga == 1) {
+                            
+                        }
+                        else if (object.Uloga == 2) {
+                            window.location.href = '/Home/Customer';
+                        }
+                    }
+                    else {
+                        window.location.href = '/Home/Index';
+                    }
+                },
+                statusCode: {
+                    403: function () {
+                        window.location.href = '/Home/Index';
+                        alert('Korisnik je blokiran');
+                    }
+                }
+            });
 
             $.ajax({
                 type: 'GET',

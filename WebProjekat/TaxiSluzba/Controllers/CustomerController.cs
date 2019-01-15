@@ -52,9 +52,9 @@ namespace TaxiSluzba.Controllers
             foreach (var voznja in Global.Voznje)
             {
 
-                if (voznja.Value.Dispecer == null)
+                if (voznja.Value.Musterija == null)
                     continue;
-                if (!voznja.Value.Dispecer.KorisnickoIme.Equals(musterija.KorisnickoIme))
+                if (!voznja.Value.Musterija.KorisnickoIme.Equals(musterija.KorisnickoIme))
                     continue;
 
                 if (parametri.Filter != 7)

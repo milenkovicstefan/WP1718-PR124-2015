@@ -385,37 +385,30 @@ namespace TaxiSluzba.Controllers
             return response;
         }
 
+        [HttpPut, Route("api/Admin/GetClosestFreeDriversRide")]
+        public IHttpActionResult GetClosestFreeDriversRide(HttpRequestMessage value)
+        {
+            IHttpActionResult response;
+            string voznjaId = HttpContext.Current.Session["voznja"].ToString();
+            Voznja v = Global.Voznje[voznjaId];
+            Lokacija l = v.PocetnaLokacija;
+            List<string> najbliziVozaci = ClosestDrivers(l);
+
+            response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(najbliziVozaci, new JsonSerializerSettings()
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            })));
+
+            return response;
+        }
+
         [HttpPut, Route("api/Admin/GetClosestFreeDrivers")]
         public IHttpActionResult GetClosestFreeDrivers(HttpRequestMessage value)
         {
             IHttpActionResult response;
             Lokacija l = JsonConvert.DeserializeObject<Lokacija>(JObject.Parse(value.Content.ReadAsStringAsync().Result).ToString());
-            List<string> najbliziVozaci = new List<string>();
-
-            
-                List<Vozac> slobodniVozaci = new List<Vozac>();
-                Dictionary<string, double> udaljenostVozaca = new Dictionary<string, double>();
-
-                foreach (var vozac in Global.Vozaci.Values)
-                {
-                    if (vozac.Voznje.All(v => v.StatusVoznje == Status.USPESNA || v.StatusVoznje == Status.NEUSPESNA) && !Global.Blokirani.Keys.Contains(vozac.KorisnickoIme))
-                    {
-                        slobodniVozaci.Add(vozac);
-                    }
-                }
-
-                foreach (var vozac in slobodniVozaci)
-                {
-                    double udaljenost = Math.Sqrt(Math.Pow((l.KoordinataX - vozac.Lokacija.KoordinataX), 2) + Math.Pow((l.KoordinataY - vozac.Lokacija.KoordinataY), 2));
-                    udaljenostVozaca.Add(vozac.KorisnickoIme, udaljenost);
-                }
-
-                udaljenostVozaca = udaljenostVozaca.OrderBy(dic => dic.Value).ToDictionary(dic => dic.Key, dic => dic.Value);
-
-                foreach (var item in udaljenostVozaca.Take(5))
-                {
-                    najbliziVozaci.Add(item.Key);
-                }
+            List<string> najbliziVozaci = ClosestDrivers(l);
             
             response = ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(najbliziVozaci, new JsonSerializerSettings()
             {
@@ -459,6 +452,38 @@ namespace TaxiSluzba.Controllers
             l.KoordinataY = koordinataY;
 
             return l;
+        }
+
+        private List<string> ClosestDrivers(Lokacija l)
+        {
+            List<string> najbliziVozaci = new List<string>();
+
+
+            List<Vozac> slobodniVozaci = new List<Vozac>();
+            Dictionary<string, double> udaljenostVozaca = new Dictionary<string, double>();
+
+            foreach (var vozac in Global.Vozaci.Values)
+            {
+                if (vozac.Voznje.All(v => v.StatusVoznje == Status.USPESNA || v.StatusVoznje == Status.NEUSPESNA) && !Global.Blokirani.Keys.Contains(vozac.KorisnickoIme))
+                {
+                    slobodniVozaci.Add(vozac);
+                }
+            }
+
+            foreach (var vozac in slobodniVozaci)
+            {
+                double udaljenost = Math.Sqrt(Math.Pow((l.KoordinataX - vozac.Lokacija.KoordinataX), 2) + Math.Pow((l.KoordinataY - vozac.Lokacija.KoordinataY), 2));
+                udaljenostVozaca.Add(vozac.KorisnickoIme, udaljenost);
+            }
+
+            udaljenostVozaca = udaljenostVozaca.OrderBy(dic => dic.Value).ToDictionary(dic => dic.Key, dic => dic.Value);
+
+            foreach (var item in udaljenostVozaca.Take(5))
+            {
+                najbliziVozaci.Add(item.Key);
+            }
+
+            return najbliziVozaci;
         }
     }
 }

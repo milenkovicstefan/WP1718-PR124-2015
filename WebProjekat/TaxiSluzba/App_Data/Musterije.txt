@@ -61,3 +61,29 @@
   ],
   "Jmbg": "1235865"
 }###
+{
+  "$id": "1",
+  "KorisnickoIme": "fd",
+  "Lozinka": "",
+  "Ime": "",
+  "Prezime": "",
+  "Pol": 0,
+  "KontaktTelefon": "",
+  "Email": "",
+  "Uloga": 2,
+  "Voznje": [],
+  "Jmbg": ""
+}###
+{
+  "$id": "1",
+  "KorisnickoIme": "dsafga",
+  "Lozinka": "sfagfae",
+  "Ime": "wagaegva",
+  "Prezime": "wfagfaw",
+  "Pol": 0,
+  "KontaktTelefon": "066556677",
+  "Email": "m@m.com",
+  "Uloga": 2,
+  "Voznje": [],
+  "Jmbg": "2204996762035"
+}###

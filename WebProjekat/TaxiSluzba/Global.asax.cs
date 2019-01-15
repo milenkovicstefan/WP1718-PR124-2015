@@ -27,6 +27,7 @@ namespace TaxiSluzba
             UcitajMusterije();
             UcitajVozace();
             UcitajVoznje();
+            UcitajBanovane();
             var config = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling
 = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -185,5 +186,19 @@ namespace TaxiSluzba
             //}
         }
 
+        protected void UcitajBanovane()
+        {
+            string path = Server.MapPath("~/App_Data/Banovani.txt");
+
+            var txt = File.ReadAllText(path);
+            var txtLines = txt.Split(new string[] { "###" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (txtLines.Contains(Environment.NewLine))
+                txtLines.Remove(Environment.NewLine);
+            foreach (var line in txtLines)
+            {
+                Korisnik k = JsonConvert.DeserializeObject<Korisnik>(line);
+                Global.Blokirani.Add(k.KorisnickoIme, k);
+            }
+        }
     }
 }

@@ -46,9 +46,9 @@ namespace TaxiSluzba.Controllers
             foreach (var voznja in Global.Voznje)
             {
 
-                if (voznja.Value.Dispecer == null)
+                if (voznja.Value.Vozac == null)
                     continue;
-                if (!voznja.Value.Dispecer.KorisnickoIme.Equals(vozac.KorisnickoIme))
+                if (!voznja.Value.Vozac.KorisnickoIme.Equals(vozac.KorisnickoIme))
                     continue;
 
                 if (parametri.Filter != 7)

@@ -1,1 +1,13 @@
-﻿
+{
+  "$id": "1",
+  "KorisnickoIme": "mile",
+  "Lozinka": null,
+  "Ime": null,
+  "Prezime": null,
+  "Pol": 0,
+  "KontaktTelefon": null,
+  "Email": null,
+  "Uloga": 0,
+  "Voznje": [],
+  "Jmbg": null
+}###

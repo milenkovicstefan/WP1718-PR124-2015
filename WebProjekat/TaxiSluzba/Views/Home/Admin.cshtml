@@ -210,7 +210,7 @@
                         <br />
                         <select name="slobodniVozaciKreiranje" id="slobodniVozaciKreiranje" size="5" style="width:350px"></select>
                         <br />
-                        <input style="width:350px;height:40px;cursor:pointer;" id="submitKreirajVoznju" type="button" name="submitKreirajVoznju" value="Kreiraj vožnju">
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitKreirajVoznju" type="button" name="submitKreirajVoznju" value="Kreirajte vožnju">
                     </form>
                 </div>
                 <button class="accordion">Dodelite vožnju</button>
@@ -220,11 +220,13 @@
                         <br />
                         <select name="nedodeljeneVoznje" id="nedodeljeneVoznje" size="5" style="width:350px"></select>
                         <br />
+                        <input style="width:350px;height:40px;cursor:pointer;" id="pronadjiSlobodne" type="button" name="pronadjiSlobodne" value="Pronađite slobodne vozače">
+                        <br />
                         Slobodni vozači:
                         <br />
                         <select name="slobodniVozaciDodela" id="slobodniVozaciDodela" size="5" style="width:350px"></select>
                         <br />
-                        <input style="width:350px;height:40px;cursor:pointer;" id="submitDodeliVoznju" type="button" name="submitDodeliVoznju" value="Dodeli vožnju">
+                        <input style="width:350px;height:40px;cursor:pointer;" id="submitDodeliVoznju" type="button" name="submitDodeliVoznju" value="Dodelite vožnju">
                     </form>
                 </div>
                 <button class="accordion">Prikažite vožnje</button>
@@ -515,11 +517,35 @@
             }
         }
 
+        function GetFreeDrivers() {
+            var lokacija = {
+                Adresa: $('#address').val(),
+                KoordinataX: $('#latitude').val(),
+                KoordinataY: $('#longitude').val()
+            };
+            var JSONObj = JSON.stringify(lokacija);
+            $("#slobodniVozaciKreiranje").empty();
+            $.ajax({
+                type: 'PUT',
+                url: '/api/Admin/GetClosestFreeDrivers',
+                data: JSONObj,
+                success: function (data) {
+                    var array = JSON.parse(data);
+                    if (array != null) {
+                        for (var i in array) {
+                            $("#slobodniVozaciKreiranje").append('<option>' + array[i] + '</option>');
+                        }
+                    }
+                }
+            })
+        }
+
         map.on('click', function (event) {
             var lonLat = ol.proj.toLonLat(event.coordinate);
             removeSelectedFeature();
             addMarker(lonLat[0], lonLat[1]);
             reverseGeocode(lonLat);
+            GetFreeDrivers();
         });
 
         $("#find_btn").click(function () { //user clicks button
@@ -637,6 +663,55 @@
 
             })
 
+            function ValidateUser($user) {
+                var numRegex = new RegExp('^[0-9]+$');
+                var mailRegex = new RegExp('^[a-zA-Z0-9]+@@[a-zA-Z]+[.][a-zA-Z]+$');
+                var validated = true;
+                var user = $user;
+                if (user.KorisnickoIme.length < 6) {
+                    validated = false;
+                }
+                if (user.Lozinka.length < 6) {
+                    validated = false;
+                }
+                if (user.Ime.length < 2) {
+                    validated = false;
+                }
+                if (user.Prezime.length < 2) {
+                    validated = false;
+                }
+                if (user.Jmbg.length != 13 || !numRegex.test(user.Jmbg)) {
+                    validated = false;
+                }
+                if (user.KontaktTelefon.length < 9 || user.KontaktTelefon.length > 10 || !numRegex.test(user.KontaktTelefon)) {
+                    validated = false;
+                }
+                if (!mailRegex.test(user.Email)) {
+                    validated = false;
+                }
+
+                return validated;
+            }
+
+            function ValidateCar($car) {
+                var yearRegex = new RegExp('^(198|199|200|201)[0-9]$');
+                var regRegex = new RegExp('^[A-Z]{2}[0-9]{3}[A-Z]{2}$');
+                var validated = true;
+                var car = $car;
+
+                if (!yearRegex.test(car.Godiste)) {
+                    validated = false;
+                }
+                if (!regRegex.test(car.RegistarskaOznaka)) {
+                    validated = false;
+                }
+                if (car.TaxiOznaka.length < 1) {
+                    validated = false;
+                }
+
+                return validated;
+            }
+
             $('#submitRegistracija').on('click', function () {
                 var user = {
                     KorisnickoIme: $('#korisnicko').val(),
@@ -658,36 +733,41 @@
                     Tip: $('#tip').prop('selectedIndex')
                 };
 
-                var JSONObj = JSON.stringify(user);
-                var JSONCar = JSON.stringify(car);
+                if (ValidateUser(user) && ValidateCar(car)) {
+                    var JSONObj = JSON.stringify(user);
+                    var JSONCar = JSON.stringify(car);
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/api/Register',
-                    data: JSONObj,
-                    success: function (data) {
-                        //var object = JSON.parse(data);
-                        //alert('Vozač ' + object.KorisnickoIme + ' registrovan.');
-                        $.ajax({
-                            type: 'POST',
-                            url: '/api/Register/AddCar',
-                            data: JSONCar,
-                            success: function (data) {
-                                var object = JSON.parse(data);
-                                alert('Vozač ' + object.Vozac.KorisnickoIme + ' registrovan.');
-                            },
-                            error: function (response) {
-                                alert(response.responseText);
-                            }
-                        });
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    }
-                });
-                $('input[type="text"]').val('');
-                $('input[type="password"]').val('');
-                window.location.href = '/Home/Admin';
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Register',
+                        data: JSONObj,
+                        success: function (data) {
+                            //var object = JSON.parse(data);
+                            //alert('Vozač ' + object.KorisnickoIme + ' registrovan.');
+                            $.ajax({
+                                type: 'POST',
+                                url: '/api/Register/AddCar',
+                                data: JSONCar,
+                                success: function (data) {
+                                    var object = JSON.parse(data);
+                                    alert('Vozač ' + object.Vozac.KorisnickoIme + ' registrovan.');
+                                },
+                                error: function (response) {
+                                    alert(response.responseText);
+                                }
+                            });
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                    $('input[type="text"]').val('');
+                    $('input[type="password"]').val('');
+                    window.location.href = '/Home/Admin';
+                }
+                else {
+                    alert('Podaci neispravno uneti. Pokušajte ponovo.');
+                }
             })
         });
 
@@ -746,6 +826,36 @@
 
     <script>
         $(function () {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/Login',
+                success: function (data) {
+                    var object = JSON.parse(data);
+                    if (object != null) {
+                        localStorage.setItem("session", data);
+                        if (object.Uloga == 0) {
+                            
+                        }
+                        else if (object.Uloga == 1) {
+                            window.location.href = '/Home/Driver';
+                        }
+                        else if (object.Uloga == 2) {
+                            window.location.href = '/Home/Customer';
+                        }
+                    }
+                    else {
+                        window.location.href = '/Home/Index';
+                    }
+                },
+                statusCode: {
+                    403: function () {
+                        window.location.href = '/Home/Index';
+                        alert('Korisnik je blokiran');
+                    }
+                }
+            });
+
             $.ajax({
                 type: 'GET',
                 url: '/api/Admin/GetUsers',
@@ -830,12 +940,54 @@
 
     <script>
         $(function () {
+            $("#pronadjiSlobodne").click(function () {
+
+                var ride = {
+                    Voznja: $('#nedodeljeneVoznje').val(),
+                };
+
+                var JSONObj = JSON.stringify(ride);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Ride',
+                    data: JSONObj,
+                    success: function (data) {
+
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+                $("#slobodniVozaciDodela").empty();
+
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/Admin/GetClosestFreeDriversRide',
+                    success: function (data) {
+                        var array = JSON.parse(data);
+                        if (array != null) {
+                            for (var i in array) {
+                                $("#slobodniVozaciDodela").append('<option>' + array[i] + '</option>');
+                            }
+                        }
+                    },
+                });
+            });
+
+            GetFreeDrivers();
+
+        })
+
+        function GetFreeDrivers() {
             var lokacija = {
                 Adresa: $('#address').val(),
                 KoordinataX: $('#latitude').val(),
                 KoordinataY: $('#longitude').val()
             };
             var JSONObj = JSON.stringify(lokacija);
+            $("#slobodniVozaciKreiranje").empty();
             $.ajax({
                 type: 'PUT',
                 url: '/api/Admin/GetClosestFreeDrivers',
@@ -845,12 +997,12 @@
                     if (array != null) {
                         for (var i in array) {
                             $("#slobodniVozaciKreiranje").append('<option>' + array[i] + '</option>');
-                            $("#slobodniVozaciDodela").append('<option>' + array[i] + '</option>');
                         }
                     }
-                },
-            });
-        })
+                }
+            })
+        }
+
     </script>
 
     <script>

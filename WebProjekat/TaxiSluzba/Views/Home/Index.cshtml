@@ -159,7 +159,36 @@
             })
         });
 
+        function Validate($user)
+        {
+            var numRegex = new RegExp('^[0-9]+$');
+            var mailRegex = new RegExp('^[a-zA-Z0-9]+@@[a-zA-Z]+[.][a-zA-Z]+$');
+            var validated = true;
+            var user = $user;
+            if (user.KorisnickoIme.length < 6) {
+                validated = false;
+            }
+            if (user.Lozinka.length < 6) {
+                validated = false;
+            }
+            if (user.Ime.length < 2) {
+                validated = false;
+            }
+            if (user.Prezime.length < 2) {
+                validated = false;
+            }
+            if (user.Jmbg.length != 13 || !numRegex.test(user.Jmbg)) {
+                validated = false;
+            }
+            if (user.KontaktTelefon.length < 9 || user.KontaktTelefon.length > 10 || !numRegex.test(user.KontaktTelefon)) {
+                validated = false;
+            }
+            if (!mailRegex.test(user.Email)) {
+                validated = false;
+            }
 
+            return validated;
+        }
 
         $(function () {
             $('#submitRegistracija').on('click', function () {
@@ -175,22 +204,27 @@
                     Uloga: 2
                 };
 
-                var JSONObj = JSON.stringify(user);
+                if (Validate(user)) {
+                    var JSONObj = JSON.stringify(user);
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/api/Register',
-                    data: JSONObj,
-                    success: function (data) {
-                        var object = JSON.parse(data);
-                        alert('Korisnik ' + object.KorisnickoIme + ' registrovan. Možete se ulogovati.');
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    }
-                });
-                $('input[type="text"]').val('');
-                $('input[type="password"]').val('');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Register',
+                        data: JSONObj,
+                        success: function (data) {
+                            var object = JSON.parse(data);
+                            alert('Korisnik ' + object.KorisnickoIme + ' registrovan. Možete se ulogovati.');
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                    $('input[type="text"]').val('');
+                    $('input[type="password"]').val('');
+                }
+                else {
+                    alert('Podaci neispravno uneti. Pokušajte ponovo.');
+                }
             })
         });
 
